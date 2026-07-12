@@ -1,0 +1,13 @@
+Classify this trademark case.
+
+protected_mark: {{$json.protected_mark}}
+candidate_mark: {{$json.candidate_mark}}
+candidate_class: {{$json.candidate_class}}
+candidate_goods: {{$json.candidate_goods}}
+applicant_name: {{$json.applicant_name}}
+owner_entity_type: {{$json.owner_entity_type}}
+string_similarity_score: {{$json.string_similarity_score}}
+phonetic_match_score: {{$json.phonetic_match_score}}
+goods_class_overlap: {{$json.goods_class_overlap}}
+
+Return only JSON.

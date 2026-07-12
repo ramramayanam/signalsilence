@@ -1,0 +1,101 @@
+case_id,protected_mark,candidate_mark,candidate_class,candidate_goods,applicant_name,owner_entity_type,string_similarity_score,phonetic_match_score,goods_class_overlap,ground_truth_label,source_type
+case_001,LULULEMON,LULULIME,025,yoga pants,Urban Rhythm Brands Inc,corporation,0.8,0.83,True,high,synthetic
+case_002,LULULEMON,LULULEMOON,025,leggings,Elena Rossi,corporation,0.77,0.82,True,high,synthetic
+case_003,LULULEMON,LULU LEMON,025,yoga pants,Nova Thread Co,corporation,0.87,0.91,True,high,synthetic
+case_004,LULULEMON,LULULEMEN,035,retail apparel store services,Elena Rossi,corporation,0.89,0.81,True,high,synthetic
+case_005,LULULEMON,LULULEM0N,025,tank tops,Northline Sports GmbH,corporation,0.78,0.94,True,high,synthetic
+case_006,LULULEMON,LULULEMONT,025,leggings,Peak Motion Labs LLC,corporation,0.78,0.93,True,high,synthetic
+case_007,LULULEMON,LULULIMON,041,fitness classes,Urban Rhythm Brands Inc,corporation,0.85,0.95,True,high,synthetic
+case_008,LULULEMON,LULU LEMAN,035,e-commerce services featuring clothing,Maya Chen,individual,0.86,0.93,True,high,synthetic
+case_009,LULULEMON,LULULEMÓN,041,online wellness coaching,Peak Motion Labs LLC,corporation,0.87,0.92,True,high,synthetic
+case_010,LULULEMON,LULULIMEN,025,athletic jackets,Peak Motion Labs LLC,corporation,0.8,0.9,True,high,synthetic
+case_011,LULULEMON,LULULEMOM,025,sports bras,Northline Sports GmbH,corporation,0.79,0.85,True,high,synthetic
+case_012,LULULEMON,LULULEMAN,025,sports bras,Nova Thread Co,individual,0.8,0.87,True,high,synthetic
+case_013,LULULEMON,LULU LEMN,025,athletic jackets,Silver Pine Retail Ltd,corporation,0.89,0.92,True,high,synthetic
+case_014,LULULEMON,LULULEMENN,025,yoga pants,Northline Sports GmbH,corporation,0.8,0.84,True,high,synthetic
+case_015,LULULEMON,LULU LEMMON,041,yoga instruction,Aria Active Holdings Inc,individual,0.84,0.93,False,high,synthetic
+case_016,LULULEMON,LULULYMON,035,retail apparel store services,John Smith,corporation,0.88,0.89,True,high,synthetic
+case_017,LULULEMON,LULULEMUN,041,online wellness coaching,Blue Cedar Ventures LLC,corporation,0.8,0.95,True,high,synthetic
+case_018,LULULEMON,LULU LEMONN,041,fitness classes,Shanghai Import Ltd,corporation,0.78,0.83,True,high,synthetic
+case_019,LULULEMON,LULULIMN,035,online retail store services for activewear,Blue Cedar Ventures LLC,corporation,0.86,0.88,False,high,synthetic
+case_020,LULULEMON,LULULEMONE,025,yoga pants,Silver Pine Retail Ltd,individual,0.78,0.93,True,high,synthetic
+case_021,LULULEMON,LULUCORE,035,online retail store services for activewear,Maya Chen,individual,0.55,0.57,False,review,synthetic
+case_022,LULULEMON,LULUFORM,035,e-commerce services featuring clothing,Peak Motion Labs LLC,individual,0.69,0.67,True,review,synthetic
+case_023,LULULEMON,LULUVIBE,009,downloadable exercise videos,John Smith,corporation,0.64,0.67,True,review,synthetic
+case_024,LULULEMON,LULUNOVA,025,running shorts,Aria Active Holdings Inc,corporation,0.57,0.68,False,review,synthetic
+case_025,LULULEMON,LULUSTRETCH,025,activewear sets,Peak Motion Labs LLC,corporation,0.55,0.67,True,review,synthetic
+case_026,LULULEMON,LEMONLULU,018,backpacks,Nova Thread Co,individual,0.66,0.67,True,review,synthetic
+case_027,LULULEMON,LULUFLOW,009,smartwatch software,Silver Pine Retail Ltd,individual,0.61,0.67,False,review,synthetic
+case_028,LULULEMON,LULUBALANCE,025,athletic jackets,Peak Motion Labs LLC,individual,0.52,0.68,True,review,synthetic
+case_029,LULULEMON,LULUSYNC,018,gym bags,Peak Motion Labs LLC,corporation,0.57,0.75,True,review,synthetic
+case_030,LULULEMON,LULUACTIVE,035,e-commerce services featuring clothing,Aria Active Holdings Inc,individual,0.65,0.61,True,review,synthetic
+case_031,LULULEMON,LULUARC,009,mobile workout app,Sanjay Patel,individual,0.56,0.59,False,review,synthetic
+case_032,LULULEMON,LULUPULSE,041,yoga instruction,Blue Cedar Ventures LLC,individual,0.69,0.58,False,review,synthetic
+case_033,LULULEMON,LULUXFIT,025,tank tops,Urban Rhythm Brands Inc,individual,0.68,0.59,True,review,synthetic
+case_034,LULULEMON,LULUMOTION,009,wellness tracking app,Sanjay Patel,corporation,0.6,0.63,True,review,synthetic
+case_035,LULULEMON,LULUFLEX,009,smartwatch software,Nova Thread Co,corporation,0.53,0.77,True,review,synthetic
+case_036,LULULEMON,LULUWELL,025,athletic jackets,John Smith,individual,0.62,0.61,True,review,synthetic
+case_037,LULULEMON,LULUGO,041,fitness classes,Blue Cedar Ventures LLC,corporation,0.72,0.62,True,review,synthetic
+case_038,LULULEMON,LULULAB,041,yoga instruction,Urban Rhythm Brands Inc,individual,0.55,0.63,False,review,synthetic
+case_039,LULULEMON,LULUEDGE,025,hoodies,Shanghai Import Ltd,corporation,0.64,0.67,True,review,synthetic
+case_040,LULULEMON,LULUBEAM,018,gym bags,Nova Thread Co,corporation,0.69,0.58,True,review,synthetic
+case_041,LULULEMON,LULUNEST,025,tank tops,Peak Motion Labs LLC,corporation,0.64,0.58,True,review,synthetic
+case_042,LULULEMON,LULURISE,025,hoodies,Maya Chen,corporation,0.65,0.63,False,review,synthetic
+case_043,LULULEMON,LULUZEN,035,online retail store services for activewear,Silver Pine Retail Ltd,individual,0.61,0.76,False,review,synthetic
+case_044,LULULEMON,LULUTRACK,025,activewear sets,Elena Rossi,corporation,0.53,0.61,True,review,synthetic
+case_045,LULULEMON,LULUMOVE,035,retail apparel store services,Peak Motion Labs LLC,corporation,0.59,0.6,True,review,synthetic
+case_046,LULULEMON,LULUSPHERE,018,gym bags,Silver Pine Retail Ltd,individual,0.71,0.59,False,review,synthetic
+case_047,LULULEMON,LULUCRAFT,009,fitness software,Peak Motion Labs LLC,corporation,0.57,0.69,False,review,synthetic
+case_048,LULULEMON,LULUQUEST,035,e-commerce services featuring clothing,Silver Pine Retail Ltd,individual,0.62,0.62,True,review,synthetic
+case_049,LULULEMON,LULUROOT,025,tank tops,Maya Chen,corporation,0.52,0.72,True,review,synthetic
+case_050,LULULEMON,LULUBLOOM,035,e-commerce services featuring clothing,Sanjay Patel,individual,0.63,0.59,True,review,synthetic
+case_051,LULULEMON,GOLDEN ORANGE,030,herbal tea,Nova Thread Co,corporation,0.3,0.2,False,low,synthetic
+case_052,LULULEMON,TESLARA,009,smartwatch software,John Smith,corporation,0.16,0.3,False,low,synthetic
+case_053,LULULEMON,MOUNTAIN ROOT,041,fitness classes,Northline Sports GmbH,corporation,0.26,0.23,False,low,synthetic
+case_054,LULULEMON,BLUE HARBOR,035,e-commerce services featuring clothing,Blue Cedar Ventures LLC,corporation,0.33,0.1,False,low,synthetic
+case_055,LULULEMON,NIKA,009,mobile workout app,Blue Cedar Ventures LLC,corporation,0.12,0.31,False,low,synthetic
+case_056,LULULEMON,STAR VALLEY,041,yoga instruction,Silver Pine Retail Ltd,corporation,0.14,0.27,False,low,synthetic
+case_057,LULULEMON,RIVER MOSS,025,yoga pants,Sanjay Patel,corporation,0.13,0.31,False,low,synthetic
+case_058,LULULEMON,SILVER ACORN,035,retail apparel store services,Aria Active Holdings Inc,corporation,0.08,0.09,False,low,synthetic
+case_059,LULULEMON,CLOUD THREAD,035,retail apparel store services,Peak Motion Labs LLC,individual,0.17,0.18,False,low,synthetic
+case_060,LULULEMON,PINE KETTLE,030,protein cookies,Northline Sports GmbH,corporation,0.1,0.32,False,low,synthetic
+case_061,LULULEMON,NOVA BRICK,009,wellness tracking app,Maya Chen,corporation,0.1,0.16,False,low,synthetic
+case_062,LULULEMON,EMBER LANE,030,energy bars,Blue Cedar Ventures LLC,corporation,0.18,0.2,False,low,synthetic
+case_063,LULULEMON,QUARTZ HILL,035,online retail store services for activewear,Urban Rhythm Brands Inc,individual,0.07,0.31,False,low,synthetic
+case_064,LULULEMON,SUN CEDAR,014,bracelets,Urban Rhythm Brands Inc,corporation,0.17,0.05,False,low,synthetic
+case_065,LULULEMON,VELVET HARBOR,030,energy bars,Elena Rossi,individual,0.26,0.07,False,low,synthetic
+case_066,LULULEMON,ORBIT FORGE,035,e-commerce services featuring clothing,Maya Chen,individual,0.16,0.24,False,low,synthetic
+case_067,LULULEMON,CEDAR NOOK,014,watches,Aria Active Holdings Inc,individual,0.26,0.14,False,low,synthetic
+case_068,LULULEMON,POLAR WREN,030,herbal tea,Elena Rossi,individual,0.18,0.28,False,low,synthetic
+case_069,LULULEMON,MINT HARBOR,035,retail apparel store services,Aria Active Holdings Inc,individual,0.29,0.21,False,low,synthetic
+case_070,LULULEMON,IRON WILLOW,035,retail apparel store services,Sanjay Patel,individual,0.26,0.18,False,low,synthetic
+case_071,LULULEMON,MAPLE TRACK,041,online wellness coaching,John Smith,corporation,0.15,0.23,False,low,synthetic
+case_072,LULULEMON,AURORA PATCH,014,jewelry,Peak Motion Labs LLC,corporation,0.26,0.1,False,low,synthetic
+case_073,LULULEMON,COPPER TIDE,009,mobile workout app,Shanghai Import Ltd,corporation,0.14,0.17,False,low,synthetic
+case_074,LULULEMON,THISTLE BAY,041,fitness classes,Sanjay Patel,individual,0.32,0.2,False,low,synthetic
+case_075,LULULEMON,AMBER FIELD,030,protein cookies,Blue Cedar Ventures LLC,individual,0.18,0.07,False,low,synthetic
+case_076,LULULEMON,OAK SIGNAL,030,herbal tea,Peak Motion Labs LLC,individual,0.13,0.27,False,low,synthetic
+case_077,LULULEMON,SAPPHIRE COVE,030,protein cookies,Sanjay Patel,corporation,0.23,0.31,False,low,synthetic
+case_078,LULULEMON,RUBY STATION,025,sports bras,Sanjay Patel,individual,0.34,0.3,False,low,synthetic
+case_079,LULULEMON,LUNAR PEAK,014,bracelets,Nova Thread Co,individual,0.3,0.19,False,low,synthetic
+case_080,LULULEMON,STONE HARBOR,009,smartwatch software,Sanjay Patel,individual,0.28,0.28,False,low,synthetic
+case_081,LULULEMON,BRASS MEADOW,035,e-commerce services featuring clothing,Sanjay Patel,corporation,0.15,0.05,False,low,synthetic
+case_082,LULULEMON,IVY COMPASS,035,online retail store services for activewear,Maya Chen,individual,0.16,0.19,False,low,synthetic
+case_083,LULULEMON,WILD MINT,009,mobile workout app,Aria Active Holdings Inc,individual,0.26,0.24,False,low,synthetic
+case_084,LULULEMON,BASIL RIDGE,025,tank tops,Northline Sports GmbH,individual,0.19,0.09,False,low,synthetic
+case_085,LULULEMON,CANYON BRIDGE,018,wallets,Elena Rossi,corporation,0.31,0.26,False,low,synthetic
+case_086,LULULEMON,PAPER OTTER,018,wallets,Shanghai Import Ltd,individual,0.15,0.15,False,low,synthetic
+case_087,LULULEMON,CRIMSON REED,041,yoga instruction,Nova Thread Co,corporation,0.21,0.11,False,low,synthetic
+case_088,LULULEMON,ECHO HOLLOW,018,gym bags,Blue Cedar Ventures LLC,individual,0.26,0.27,False,low,synthetic
+case_089,LULULEMON,FROST LAGOON,030,herbal tea,Sanjay Patel,corporation,0.34,0.19,False,low,synthetic
+case_090,LULULEMON,GLASS OLIVE,018,gym bags,Peak Motion Labs LLC,individual,0.11,0.17,False,low,synthetic
+case_091,LULULEMON,HONEY ANCHOR,025,tank tops,Northline Sports GmbH,corporation,0.2,0.13,False,low,synthetic
+case_092,LULULEMON,JASPER DUNE,018,backpacks,Blue Cedar Ventures LLC,individual,0.3,0.17,False,low,synthetic
+case_093,LULULEMON,KITE HARBOR,030,protein cookies,Shanghai Import Ltd,individual,0.13,0.05,False,low,synthetic
+case_094,LULULEMON,LOTUS RIDGE,030,herbal tea,Shanghai Import Ltd,corporation,0.13,0.04,False,low,synthetic
+case_095,LULULEMON,MELLOW PINES,009,mobile workout app,John Smith,individual,0.26,0.2,False,low,synthetic
+case_096,LULULEMON,NORTH QUILL,009,smartwatch software,Urban Rhythm Brands Inc,individual,0.28,0.08,False,low,synthetic
+case_097,LULULEMON,OPAL THICKET,014,bracelets,Urban Rhythm Brands Inc,corporation,0.29,0.08,False,low,synthetic
+case_098,LULULEMON,PEARL FERN,035,online retail store services for activewear,Elena Rossi,corporation,0.33,0.2,False,low,synthetic
+case_099,LULULEMON,QUEST MAPLE,018,wallets,Urban Rhythm Brands Inc,corporation,0.09,0.24,False,low,synthetic
+case_100,LULULEMON,RIVER QUARTZ,030,herbal tea,Peak Motion Labs LLC,individual,0.31,0.21,False,low,synthetic
