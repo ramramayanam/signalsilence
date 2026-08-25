@@ -55,7 +55,12 @@ case ──> similarity.py ──> triage.py ──────────> pol
   metric that matters most for triage: high-risk false negatives.
 - `tests/test_policy.py` — the instruction set restated as 12 executable
   tests, each citing the rule it enforces.
+  
+## Governance
 
+This system ships with its own governance artifacts:
+- [AI Intake & Risk-Tiering Rubric](governance/ai-intake-risk-tiering-rubric.md) — the program "front door" (NIST AI RMF, EU AI Act tiers)
+- [Risk & Impact Assessment](governance/risk-impact-assessment-signalsilence.md) — completed NIST AI RMF-mapped assessment with agent registry entry and autonomy reclassification gates
 ## Results (offline mode, 100 labeled synthetic cases)
 
 | | predicted low | predicted review | predicted high |
