@@ -35,10 +35,17 @@ deterministic policy.
 ## Architecture
 
 ```
+                        retrieval.py (RAG)
+                        precedent corpus, BM25
+                        or dense embeddings
+                              │ top-3 adjudicated precedents
+                              ▼
 case ──> similarity.py ──> triage.py ──────────> policy.py ──> result
-         (deterministic:    (context judgment:    (risk invariants
-          Jaro-Winkler,      LLM w/ strict JSON,   as code + audit
-          Double Metaphone)  or offline heuristic) trail)
+         (deterministic:    (context judgment:    (risk invariants     │
+          Jaro-Winkler,      LLM w/ strict JSON,   as code + audit     ▼ evals only
+          Double Metaphone)  or offline heuristic) trail)        LLM-as-judge
+                                                                 grades explanations,
+                                                                 never classifications
 ```
 
 - `src/signalsilence/similarity.py` — deterministic scoring, including the
@@ -51,8 +58,21 @@ case ──> similarity.py ──> triage.py ──────────> pol
 - `src/signalsilence/triage.py` — orchestration; LLM context judgment with
   strict-JSON output and fail-toward-caution parsing, or a transparent
   offline heuristic mode (no API key required to run everything).
+- `src/signalsilence/retrieval.py` — precedent retrieval (RAG): dual-mode
+  (lexical BM25 by default — pure Python, deterministic, zero cost; optional
+  dense embeddings via sentence-transformers). Retrieval feeds the context
+  judgment only — it can never override a policy invariant — and evals use
+  leave-one-out retrieval so a case never sees its own adjudication.
 - `evals/run_eval.py` — confusion matrix, per-label precision/recall, and the
   metric that matters most for triage: high-risk false negatives.
+- `evals/judge.py` — LLM-as-judge for *explanation quality*: classification
+  stays graded against ground-truth labels (a deterministic grader beats a
+  model wherever one exists); the judge grades what only a model can — whether
+  each audit trail / rationale is faithful to the evidence. Three-dimension
+  rubric (faithfulness, invariant citation, evidence integrity), strict JSON,
+  a different model than the pipeline (no grading your own homework), and no
+  write access: a judge score can flag a case for human review but can never
+  change a classification.
 - `tests/test_policy.py` — the instruction set restated as 12 executable
   tests, each citing the rule it enforces.
   
@@ -62,6 +82,8 @@ This system ships with its own governance artifacts:
 - [AI Intake & Risk-Tiering Rubric](governance/ai-intake-risk-tiering-rubric.md) — the program "front door" (NIST AI RMF, EU AI Act tiers)
 - [Risk & Impact Assessment](governance/risk-impact-assessment-signalsilence.md) — completed NIST AI RMF-mapped assessment with agent registry entry and autonomy reclassification gates
 ## Results (offline mode, 100 labeled synthetic cases)
+
+Without retrieval:
 
 | | predicted low | predicted review | predicted high |
 |---|---|---|---|
@@ -80,6 +102,24 @@ judgment the architecture reserves for the LLM layer. The eval doesn't just
 score the system; it locates the boundary between what determinism handles
 and where an LLM earns its cost. Run with `ANTHROPIC_API_KEY` set to measure
 the LLM-context configuration on the same cases.
+
+With retrieval (`--rag`, BM25, leave-one-out):
+
+| | predicted low | predicted review | predicted high |
+|---|---|---|---|
+| **truth: low** (n=50) | **50** | 0 | 0 |
+| **truth: review** (n=30) | 10 | **8** | 12 |
+| **truth: high** (n=20) | 0 | 0 | **20** |
+
+Accuracy 78%; `high` recall 0.90 → **1.00** — **precedent retrieval recovers
+both dangerous misses** — while `low` recall stays 1.00 (the zero-false-alarm
+guarantee is preserved). Both recovered cases pattern-match to previously
+adjudicated filings with similar goods wording: the nearest precedents were
+decided above `low`, which is evidence of commercial adjacency the keyword
+heuristics could not see. The honest trade-off: a few more borderline
+`review` cases now escalate to `high` (precision 0.69 → 0.62) — over-caution,
+the cheap error in triage, and exactly the failure direction the product
+chooses on purpose.
 
 The dataset's precomputed similarity scores were also NOT trusted: the
 pipeline recomputes similarity deterministically, and the eval compares
@@ -105,14 +145,23 @@ need it. The original n8n workflow design is documented in `legacy/`.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests/            # 12 invariant tests
+python -m pytest tests/            # 21 tests: invariants + retrieval + judge harness
 python evals/run_eval.py           # offline eval, no API key needed
+python evals/run_eval.py --rag     # + precedent retrieval (leave-one-out)
 python evals/run_eval.py --show-misses
 streamlit run app.py               # interactive demo (5 canonical cases)
 
-# Optional: LLM context judgment
+# Optional: LLM context judgment (RAG precedents ground the prompt)
 export ANTHROPIC_API_KEY=...
-python evals/run_eval.py
+python evals/run_eval.py --rag
+
+# Optional: LLM-as-judge on explanation quality (needs API key)
+python evals/run_eval.py --rag --judge audit --judge-sample 20
+python evals/run_eval.py --rag --judge rationale --judge-sample 20
+
+# Optional: dense-embedding retrieval backend
+pip install sentence-transformers
+SIGNALSILENCE_RETRIEVAL=embedding python evals/run_eval.py --rag
 ```
 
 ## Human-in-the-loop design (production shape)

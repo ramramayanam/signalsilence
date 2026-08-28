@@ -2,6 +2,9 @@
 
 Usage:
     python evals/run_eval.py                 # offline mode (deterministic + heuristics)
+    python evals/run_eval.py --rag           # + precedent retrieval (leave-one-out)
+    python evals/run_eval.py --judge audit   # + LLM-as-judge on audit trails (needs key)
+    python evals/run_eval.py --judge rationale --judge-sample 20
     ANTHROPIC_API_KEY=... python evals/run_eval.py   # LLM context judgment
 
 Outputs per-label precision/recall, a confusion matrix, overall accuracy,
@@ -16,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from signalsilence.retrieval import PrecedentIndex  # noqa: E402
 from signalsilence.schema import Case  # noqa: E402
 from signalsilence.triage import triage  # noqa: E402
 
@@ -44,9 +48,20 @@ def main():
     data = Path(__file__).resolve().parents[1] / "data" / "synthetic_cases.csv"
     confusion = defaultdict(Counter)   # confusion[truth][predicted]
     misses = []
+    results = []
 
-    for case in load_cases(data):
-        result = triage(case)
+    cases = list(load_cases(data))
+    retriever = None
+    if "--rag" in sys.argv:
+        # Leave-one-out is enforced per-case below (exclude_self=True):
+        # a case must never retrieve its own adjudication.
+        retriever = PrecedentIndex(cases)
+        print(f"\nRAG enabled: precedent retrieval, backend={retriever.backend}, "
+              f"leave-one-out")
+
+    for case in cases:
+        result = triage(case, retriever=retriever, exclude_self=True)
+        results.append((case, result))
         pred = result.risk.value
         truth = case.ground_truth_label
         confusion[truth][pred] += 1
@@ -85,6 +100,17 @@ def main():
                   f"truth={case.ground_truth_label} pred={result.risk.value} "
                   f"lex={result.scores.lexical} phon={result.scores.phonetic} "
                   f"notes={result.invariant_notes}")
+
+    if "--judge" in sys.argv:
+        from judge import run_judge  # noqa: E402  (same directory)
+        target = sys.argv[sys.argv.index("--judge") + 1] \
+            if len(sys.argv) > sys.argv.index("--judge") + 1 \
+            and not sys.argv[sys.argv.index("--judge") + 1].startswith("--") \
+            else "audit"
+        sample = None
+        if "--judge-sample" in sys.argv:
+            sample = int(sys.argv[sys.argv.index("--judge-sample") + 1])
+        run_judge(results, target=target, sample=sample)
 
 
 if __name__ == "__main__":

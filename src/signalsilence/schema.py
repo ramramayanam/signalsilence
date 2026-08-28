@@ -66,3 +66,4 @@ class TriageResult:
     context: ContextJudgment
     insight: str = ""
     invariant_notes: list = field(default_factory=list)  # policy enforcement audit trail
+    precedents: list = field(default_factory=list)  # retrieved precedents (RAG), for audit

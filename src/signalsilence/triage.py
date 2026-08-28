@@ -17,6 +17,7 @@ import os
 import re
 
 from .policy import classify
+from .retrieval import format_precedents_for_prompt, precedent_adjacency_vote
 from .schema import Case, ContextJudgment, SimilarityScores, TriageResult
 from . import similarity
 
@@ -31,6 +32,11 @@ applicant_name: {applicant_name}
 owner_entity_type: {owner_entity_type}
 recent_filing_count: {recent_filing_count}
 
+Adjudicated precedents (retrieved similar past cases and their outcomes;
+grounding evidence for the goods_adjacent judgment — weigh them, do not
+copy them blindly):
+{precedents}
+
 Definitions (from the SignalSilence instruction set):
 - goods_adjacent: goods are commercially adjacent (complements, accessories, line extensions, same channels/purchasers, or consumers could assume shared brand origin). Class differences do not control.
 - added_wording_descriptive: the candidate mark is the core mark plus wording that is descriptive/generic (a product or category descriptor), not a distinctive element.
@@ -44,8 +50,15 @@ Return: {{"goods_adjacent": bool, "added_wording_descriptive": bool, "plausible_
 _ADJACENT_TO_025 = {"018", "025", "026", "028", "035"}
 
 
-def _offline_context(case: Case) -> ContextJudgment:
-    """Zero-cost approximation of the four contextual judgments."""
+def _offline_context(case: Case, precedents=None) -> ContextJudgment:
+    """Zero-cost approximation of the four contextual judgments.
+
+    With precedents (RAG offline mode), retrieval augments the adjacency
+    heuristic: if the nearest adjudicated cases were decided above `low`,
+    the goods relationship evidently mattered there, and that is evidence
+    of adjacency here. Retrieval feeds the context judgment only —
+    policy.py invariants still decide risk.
+    """
     goods = (case.candidate_goods or "").lower()
     cand_class = str(case.candidate_class or "").zfill(3)
 
@@ -67,16 +80,21 @@ def _offline_context(case: Case) -> ContextJudgment:
         for w in (core.lower(), "subsidiary", "franchise", "official")
     )
     behavioral = (case.recent_filing_count or 0) >= 10
+    rationale = "offline heuristic judgment"
+    if precedents and not adjacent and precedent_adjacency_vote(precedents):
+        adjacent = True
+        ids = ",".join(p.case_id for p in precedents)
+        rationale = f"offline heuristic + precedent adjacency vote ({ids})"
     return ContextJudgment(
         goods_adjacent=bool(adjacent),
         added_wording_descriptive=bool(descriptive),
         plausible_affiliation=bool(affiliated),
         behavioral_signal=behavioral,
-        rationale="offline heuristic judgment",
+        rationale=rationale,
     )
 
 
-def _llm_context(case: Case) -> ContextJudgment:
+def _llm_context(case: Case, precedents=None) -> ContextJudgment:
     import anthropic  # imported lazily so offline mode has no dependency
 
     client = anthropic.Anthropic()
@@ -93,6 +111,7 @@ def _llm_context(case: Case) -> ContextJudgment:
                 applicant_name=case.applicant_name,
                 owner_entity_type=case.owner_entity_type,
                 recent_filing_count=case.recent_filing_count,
+                precedents=format_precedents_for_prompt(precedents or []),
             ),
         }],
     )
@@ -108,23 +127,36 @@ def _llm_context(case: Case) -> ContextJudgment:
         )
     except (json.JSONDecodeError, KeyError, TypeError):
         # v1-era safety rule preserved: on parse failure, fail toward caution.
-        return _offline_context(case)
+        return _offline_context(case, precedents)
 
 
-def triage(case: Case, use_llm: bool | None = None) -> TriageResult:
-    """Run one case through the full pipeline."""
+def triage(case: Case, use_llm: bool | None = None, retriever=None,
+           exclude_self: bool = False) -> TriageResult:
+    """Run one case through the full pipeline.
+
+    retriever: optional PrecedentIndex (RAG). exclude_self=True enables
+    leave-one-out retrieval for evals, so a case never retrieves itself.
+    """
     lex, phon = similarity.score_case(case.protected_mark, case.candidate_mark)
     # Prefer freshly computed deterministic scores; dataset scores are kept
     # for comparison in evals, not trusted for classification.
     scores = SimilarityScores(lexical=lex, phonetic=phon)
 
+    precedents = []
+    if retriever is not None:
+        precedents = retriever.retrieve(
+            case, k=3,
+            exclude_case_id=case.case_id if exclude_self else None)
+
     if use_llm is None:
         use_llm = bool(os.environ.get("ANTHROPIC_API_KEY"))
-    ctx = _llm_context(case) if use_llm else _offline_context(case)
+    ctx = (_llm_context(case, precedents) if use_llm
+           else _offline_context(case, precedents))
 
     risk, action, notes = classify(scores, ctx, same_class=case.goods_class_overlap)
     insight = ctx.rationale or notes[-1]
     return TriageResult(
         case_id=case.case_id, risk=risk, action=action,
         scores=scores, context=ctx, insight=insight, invariant_notes=notes,
+        precedents=precedents,
     )
