@@ -121,6 +121,46 @@ heuristics could not see. The honest trade-off: a few more borderline
 the cheap error in triage, and exactly the failure direction the product
 chooses on purpose.
 
+## Results (LLM context judgment + RAG, live run)
+
+With `ANTHROPIC_API_KEY` set (context model: claude-sonnet-4-6, retrieved
+precedents grounding the prompt), measured on the same 100 cases:
+
+| | predicted low | predicted review | predicted high |
+|---|---|---|---|
+| **truth: low** (n=50) | **50** | 0 | 0 |
+| **truth: review** (n=30) | 8 | **9** | 13 |
+| **truth: high** (n=20) | 0 | 0 | **20** |
+
+Accuracy 79%. Both safety guarantees hold with the live model in the loop:
+`low` recall 1.00 (zero false alarms) and `high` recall 1.00 (zero dangerous
+misses). `review` recall improves to 0.30 vs. 0.27 offline+RAG, with the
+same deliberate over-caution pattern on borderline cases. The honest
+finding: on this synthetic set, the LLM layer's marginal gain over
+offline+RAG is real but modest — the point of measuring it rather than
+assuming it. Real-world goods descriptions are far messier than the
+synthetic ones, which is where contextual judgment is expected to earn
+more of its keep (see Limitations).
+
+### LLM-as-judge (explanation quality, live run)
+
+A different model (claude-haiku-4-5) graded the pipeline's audit trails
+against the evidence — faithfulness, invariant citation, and evidence
+integrity, scored 1-5 with strict JSON (sample of 5 cases):
+
+| dimension | mean |
+|---|---|
+| faithfulness | 4.80 / 5 |
+| invariant citation | 5.00 / 5 |
+| evidence integrity | 4.80 / 5 |
+| flagged for human review | 0 / 5 |
+
+Classification correctness is never judge-graded — ground-truth labels
+handle that above. The judge grades only what a deterministic grader
+cannot: whether each explanation is faithful to its evidence. Judge
+scores can flag a case for human review but can never change a
+classification.
+
 The dataset's precomputed similarity scores were also NOT trusted: the
 pipeline recomputes similarity deterministically, and the eval compares
 against ground-truth labels only.
