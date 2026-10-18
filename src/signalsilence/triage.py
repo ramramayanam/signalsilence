@@ -117,16 +117,17 @@ def _offline_context(case: Case, precedents=None) -> ContextJudgment:
             "sport", "athletic", "yoga", "legging", "sock", "accessor",
         ))
     )
-    core = re.sub(r"[^A-Z]", "", case.protected_mark.upper())
     cand_tokens = re.findall(r"[A-Z]+", case.candidate_mark.upper())
     descriptive = (
         len(cand_tokens) > 1
         and similarity.lexical_similarity(case.protected_mark, cand_tokens[0]) >= 0.80
     )
-    affiliated = any(
-        w in (case.applicant_name or "").lower()
-        for w in (core.lower(), "subsidiary", "franchise", "official")
-    )
+    # Affiliation is not established offline (rules-v2). Applicant-name text
+    # is not evidence: a brand inside a name is as typical of knock-offs
+    # ("Lululemon Knockoffs LLC") as of affiliates, and substring matching
+    # misfires ("Nikesh" contains "nike"). Case has no explicit affiliation
+    # field, so only LLM mode can assert it.
+    affiliated = False
     behavioral = (case.recent_filing_count or 0) >= 10
     rationale = "offline heuristic judgment"
     if precedents and not adjacent and precedent_adjacency_vote(precedents):

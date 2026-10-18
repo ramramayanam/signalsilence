@@ -6,7 +6,7 @@ similar mark (lexical or phonetic >= 0.70) + behavioral signal -> HIGH,
 evaluated after I4/I1/I2, so it only fires when those do not.
 
 The cases below are a small synthetic slice written for these tests.
-Their expected values are derived from the current rules (rules-v1),
+Their expected values are derived from the current rules (unchanged by rules-v2),
 not legal ground truth. Each one is fed through a CSV and the eval
 loader, so the test covers the full path: data -> load_cases -> triage.
 """

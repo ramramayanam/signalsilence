@@ -12,11 +12,15 @@ the instruction it implements.
 """
 from .schema import Action, ContextJudgment, Risk, SimilarityScores
 
-# Provenance label for the rules below (thresholds + invariant order).
-# Recorded with every analyst decision. Bump it whenever a change to this
-# module alters classification output, together with the regression
-# fixture in tests/fixtures/.
-POLICY_VERSION = "rules-v1"
+# Provenance label for the full deterministic decision path: the offline
+# context heuristics in triage.py plus the rules below (thresholds and
+# invariant order). Recorded with every analyst decision. Bump it whenever
+# a change to either alters risk/action output, together with the
+# regression fixture in tests/fixtures/.
+#   rules-v1  original rules (thresholds 0.85 / 0.70, invariants I1-I6).
+#   rules-v2  offline mode no longer infers affiliation from applicant-name
+#             text (D2); policy rules and thresholds unchanged.
+POLICY_VERSION = "rules-v2"
 
 STRONG_PHONETIC = 0.85   # "Phonetic similarity >= 0.85 counts as strong similarity"
 STRONG_LEXICAL = 0.85
