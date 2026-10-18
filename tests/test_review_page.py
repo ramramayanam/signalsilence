@@ -3,6 +3,7 @@
 Skipped when streamlit is not installed. Each test points the page at a
 temporary database via SIGNALSILENCE_REVIEW_DB and forces offline mode.
 """
+import json
 import sys
 from pathlib import Path
 
@@ -77,3 +78,40 @@ def test_submitting_without_a_decision_records_nothing(page):
     at.button[0].click().run()
     assert any("Choose a decision" in str(w.value) for w in at.warning)
     assert review_store.case_history(db, "demo_1") == []
+
+
+def test_llm_fallback_is_shown_and_recorded_as_fallback(tmp_path, monkeypatch):
+    """With LLM mode on but the API failing, the page must say so and record
+    llm_fallback_offline, never a successful LLM assessment."""
+    import streamlit as st
+    from test_llm_fallback import fake_anthropic
+
+    db = tmp_path / "reviews.db"
+    monkeypatch.setenv("SIGNALSILENCE_REVIEW_DB", str(db))
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key-not-real")
+    monkeypatch.setitem(sys.modules, "anthropic", fake_anthropic("RateLimitError"))
+    st.cache_data.clear()  # assess() is cached per process
+    try:
+        at = AppTest.from_file(PAGE, default_timeout=30).run()
+        assert not at.exception
+        at.radio[0].set_value("demo_4").run()
+        assert any("LLM unavailable (rate_limit)" in str(w.value) for w in at.warning)
+        assert "llm_fallback_offline" in _text(at)
+        at.radio(key="decision_demo_4").set_value("dismiss_flag")
+        at.button[0].click().run()
+        assert not at.exception
+    finally:
+        st.cache_data.clear()
+    [event] = review_store.case_history(db, "demo_4")
+    assert event["assessment_mode"] == "llm_fallback_offline"
+    assert event["system_risk"] == "low" and event["system_action"] == "review"
+    snap = json.loads(event["system_snapshot"])["system_assessment"]
+    assert (snap["assessment_mode"], snap["fallback_reason"]) == ("llm_fallback_offline", "rate_limit")
+
+
+def test_offline_decision_is_recorded_as_offline(page):
+    at, db = page
+    at.radio(key="decision_demo_1").set_value("confirm_flag")
+    at.button[0].click().run()
+    [event] = review_store.case_history(db, "demo_1")
+    assert event["assessment_mode"] == "offline"

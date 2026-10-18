@@ -11,6 +11,12 @@ Two context-judgment backends:
 
   * Offline mode (no key): transparent heuristics approximate the same
     four judgments so the full pipeline, evals, and demo run at zero cost.
+
+If LLM mode is requested but the model is unavailable (package missing,
+auth, network, rate limit, unusable response), triage never crashes: it
+uses the offline judgment, labels the result "llm_fallback_offline" with
+a safe failure category, keeps the offline risk, and raises a MONITOR
+action to REVIEW so a degraded assessment is not silently dismissed.
 """
 import json
 import os
@@ -18,8 +24,50 @@ import re
 
 from .policy import classify
 from .retrieval import format_precedents_for_prompt, precedent_adjacency_vote
-from .schema import Case, ContextJudgment, SimilarityScores, TriageResult
+from .schema import Action, Case, ContextJudgment, SimilarityScores, TriageResult
 from . import similarity
+
+MODE_OFFLINE = "offline"
+MODE_LLM = "llm"
+MODE_FALLBACK = "llm_fallback_offline"
+
+
+class LLMUnavailable(Exception):
+    """The LLM context judgment could not be used. Carries a safe category only."""
+
+    def __init__(self, category: str):
+        super().__init__(category)
+        self.category = category
+
+
+def _failure_category(exc: Exception, anthropic) -> str:
+    """Map an SDK exception to a safe category by type; message text is never read."""
+    checks = (  # most specific first: APITimeoutError subclasses APIConnectionError
+        ("AuthenticationError", "authentication"),
+        ("PermissionDeniedError", "authentication"),
+        ("RateLimitError", "rate_limit"),
+        ("APITimeoutError", "timeout"),
+        ("APIConnectionError", "connection"),
+        ("AnthropicError", "api_error"),
+    )
+    for name, category in checks:
+        cls = getattr(anthropic, name, None)
+        if isinstance(cls, type) and isinstance(exc, cls):
+            return category
+    return "unexpected_error"  # e.g. TypeError when no API key can be resolved
+
+
+def _strict_bool(value) -> bool:
+    """Accept only JSON booleans or the strings "true"/"false" (any case).
+
+    Anything else (numbers, "yes", null, ...) is ambiguous and rejected,
+    so the caller falls back instead of inventing a fact.
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str) and value.strip().lower() in ("true", "false"):
+        return value.strip().lower() == "true"
+    raise ValueError("not a boolean")
 
 CONTEXT_PROMPT = """You are a trademark context analyst. Judge ONLY the four context questions below for this case. Do not classify risk. Return strict JSON, no markdown, no extra text.
 
@@ -95,39 +143,42 @@ def _offline_context(case: Case, precedents=None) -> ContextJudgment:
 
 
 def _llm_context(case: Case, precedents=None) -> ContextJudgment:
-    import anthropic  # imported lazily so offline mode has no dependency
-
-    client = anthropic.Anthropic()
-    msg = client.messages.create(
-        model=os.environ.get("SIGNALSILENCE_MODEL", "claude-sonnet-4-6"),
-        max_tokens=300,
-        messages=[{
-            "role": "user",
-            "content": CONTEXT_PROMPT.format(
-                protected_mark=case.protected_mark,
-                candidate_mark=case.candidate_mark,
-                candidate_class=case.candidate_class,
-                candidate_goods=case.candidate_goods,
-                applicant_name=case.applicant_name,
-                owner_entity_type=case.owner_entity_type,
-                recent_filing_count=case.recent_filing_count,
-                precedents=format_precedents_for_prompt(precedents or []),
-            ),
-        }],
+    """LLM context judgment. Raises LLMUnavailable on any failure; triage() falls back."""
+    prompt = CONTEXT_PROMPT.format(
+        protected_mark=case.protected_mark,
+        candidate_mark=case.candidate_mark,
+        candidate_class=case.candidate_class,
+        candidate_goods=case.candidate_goods,
+        applicant_name=case.applicant_name,
+        owner_entity_type=case.owner_entity_type,
+        recent_filing_count=case.recent_filing_count,
+        precedents=format_precedents_for_prompt(precedents or []),
     )
-    raw = "".join(b.text for b in msg.content if b.type == "text")
+    try:
+        import anthropic  # imported lazily so offline mode has no dependency
+    except ImportError:
+        raise LLMUnavailable("package_missing") from None
+    try:
+        client = anthropic.Anthropic()
+        msg = client.messages.create(
+            model=os.environ.get("SIGNALSILENCE_MODEL", "claude-sonnet-4-6"),
+            max_tokens=300,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        raw = "".join(b.text for b in msg.content if b.type == "text")
+    except Exception as exc:  # any client/transport failure must degrade, not crash
+        raise LLMUnavailable(_failure_category(exc, anthropic)) from None
     try:
         data = json.loads(re.sub(r"```(json)?|```", "", raw).strip())
         return ContextJudgment(
-            goods_adjacent=bool(data["goods_adjacent"]),
-            added_wording_descriptive=bool(data["added_wording_descriptive"]),
-            plausible_affiliation=bool(data["plausible_affiliation"]),
-            behavioral_signal=bool(data["behavioral_signal"]),
+            goods_adjacent=_strict_bool(data["goods_adjacent"]),
+            added_wording_descriptive=_strict_bool(data["added_wording_descriptive"]),
+            plausible_affiliation=_strict_bool(data["plausible_affiliation"]),
+            behavioral_signal=_strict_bool(data["behavioral_signal"]),
             rationale=str(data.get("rationale", ""))[:200],
         )
-    except (json.JSONDecodeError, KeyError, TypeError):
-        # v1-era safety rule preserved: on parse failure, fail toward caution.
-        return _offline_context(case, precedents)
+    except (ValueError, KeyError, TypeError):  # JSONDecodeError is a ValueError
+        raise LLMUnavailable("malformed_response") from None
 
 
 def triage(case: Case, use_llm: bool | None = None, retriever=None,
@@ -150,13 +201,31 @@ def triage(case: Case, use_llm: bool | None = None, retriever=None,
 
     if use_llm is None:
         use_llm = bool(os.environ.get("ANTHROPIC_API_KEY"))
-    ctx = (_llm_context(case, precedents) if use_llm
-           else _offline_context(case, precedents))
+    mode, fallback_reason = MODE_OFFLINE, None
+    if use_llm:
+        try:
+            ctx, mode = _llm_context(case, precedents), MODE_LLM
+        except LLMUnavailable as exc:
+            mode, fallback_reason = MODE_FALLBACK, exc.category
+            ctx = _offline_context(case, precedents)
+            ctx.rationale = f"{ctx.rationale} (LLM unavailable: {fallback_reason})"
+    else:
+        ctx = _offline_context(case, precedents)
 
     risk, action, notes = classify(scores, ctx, same_class=case.goods_class_overlap)
+    if mode == MODE_FALLBACK:
+        # Risk is kept exactly as the offline policy decided. Only a MONITOR
+        # action is raised, so a degraded assessment still gets human review.
+        if action == Action.MONITOR:
+            action = Action.REVIEW
+            notes.append(f"LLM fallback ({fallback_reason}): offline assessment used; "
+                         "action raised MONITOR -> REVIEW because the LLM was unavailable")
+        else:
+            notes.append(f"LLM fallback ({fallback_reason}): offline assessment used; "
+                         "action unchanged")
     insight = ctx.rationale or notes[-1]
     return TriageResult(
         case_id=case.case_id, risk=risk, action=action,
         scores=scores, context=ctx, insight=insight, invariant_notes=notes,
-        precedents=precedents,
+        precedents=precedents, assessment_mode=mode, fallback_reason=fallback_reason,
     )
