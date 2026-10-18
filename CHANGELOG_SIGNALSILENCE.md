@@ -51,6 +51,26 @@ behavior or default outputs were modified (verified on all 105 cases at every st
   rewrite changed outputs unless `POLICY_VERSION` is bumped.
 - Added the README "Analyst Review workspace" section, this changelog and `TEST_RESULTS.md`.
 
+## Phase 1.2: Analyst Review UI polish (presentation only)
+- `pages/1_Analyst_Review.py`: the page uses a wide layout with two columns.
+  - **Left:** the case queue as a selectable list. Each entry shows the marks, a risk badge,
+    the system recommendation, review status and last-reviewed time, under a summary line.
+  - **Right:** the selected case.
+    - A header shows system risk, system recommendation and analyst review status.
+    - **System assessment** and **Analyst decision** sit in separate panels.
+    - System values use red/orange/green/gray badges, and analyst status uses blue, so a
+      system "Escalate" never looks like an analyst decision.
+    - Each of the three unchanged decisions has a one-line explanation.
+    - The history shows the latest decision first; all decisions and the stored snapshot
+      stay accessible.
+- Fixed a UI-only bug introduced by the new list: recording a decision changed the list's
+  captions, which made Streamlit reset the selection to the first case. The selection is now
+  kept in session state.
+- `tests/test_review_page.py`: updated for the new layout. It now also checks that the page
+  stays on the reviewed case after recording.
+- No changes to scoring, policy, retrieval, review-store semantics, decision choices or the
+  105 regression outputs.
+
 ## Known issues deliberately left open (see `CURRENT_STATE.md` §10)
 - **D1:** the "high similarity … context override" note is unreachable.
 - **D2:** offline affiliation matching is too permissive (protected word in applicant name → REVIEW cap).

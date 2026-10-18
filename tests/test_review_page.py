@@ -29,28 +29,36 @@ def page(tmp_path, monkeypatch):
 
 
 def _text(at):
-    return " ".join(str(e.value) for e in list(at.markdown) + list(at.info) + list(at.caption))
+    return " ".join(str(e.value) for e in
+                    list(at.markdown) + list(at.info) + list(at.caption) + list(at.subheader))
 
 
 def test_queue_lists_five_demo_cases_unreviewed(page):
     at, _ = page
-    queue = at.dataframe[0].value
-    assert list(queue["Case"]) == ["demo_1", "demo_2", "demo_3", "demo_4", "demo_5"]
-    assert set(queue["Review status"]) == {"Unreviewed"}
-    assert list(queue["System risk"]) == ["High", "High", "High", "Low", "Low"]
+    queue = at.radio[0]
+    assert queue.options == [
+        "**LULULEMON** vs **LULULEMMON**", "**NIKE** vs **NIKKE**",
+        "**BATA** vs **BAATA LACES**", "**LULULEMON** vs **LULULIME**",
+        "**PHISH** vs **FISH**"]
+    assert "5 cases · 3 high · 0 review · 2 low · 0 reviewed" in _text(at)
+    assert ":gray-background[Unreviewed]" in _text(at)
 
 
 def test_page_separates_recommendation_from_decision(page):
     at, _ = page
-    assert "SignalSilence recommends. The analyst decides." in _text(at)
-    assert at.radio[0].options == ["Confirm Flag", "Dismiss Flag", "Refer for Legal Review"]
-    assert "Not available" in _text(at)  # missing source metadata is not fabricated
+    text = _text(at)
+    assert "SignalSilence recommends. The analyst decides." in text
+    assert "System assessment" in text and "Analyst decision" in text
+    assert ":gray-background[Escalate]" in text  # system styling, never analyst blue
+    assert at.radio(key="decision_demo_1").options == [
+        "Confirm Flag", "Dismiss Flag", "Refer for Legal Review"]
+    assert "Not available" in text  # missing source metadata is not fabricated
 
 
 def test_recording_a_decision_persists_and_updates_status(page):
     at, db = page
-    at.selectbox[0].set_value("demo_3").run()
-    at.radio[0].set_value("refer_legal_review")
+    at.radio[0].set_value("demo_3").run()
+    at.radio(key="decision_demo_3").set_value("refer_legal_review")
     at.text_area[0].set_value("Shoelaces are adjacent to footwear.")
     at.button[0].click().run()
     assert not at.exception
@@ -58,8 +66,10 @@ def test_recording_a_decision_persists_and_updates_status(page):
     assert event["analyst_decision"] == "refer_legal_review"
     assert event["analyst_note"] == "Shoelaces are adjacent to footwear."
     assert event["system_risk"] == "high" and event["system_action"] == "escalate"
-    queue = at.dataframe[0].value
-    assert queue.set_index("Case").loc["demo_3", "Review status"] == "Referred for Legal Review"
+    text = _text(at)
+    assert ":blue-background[**Referred for Legal Review**]" in text
+    assert "1 reviewed" in text
+    assert at.dataframe[0].value["Analyst decision"].tolist() == ["Refer for Legal Review"]
 
 
 def test_submitting_without_a_decision_records_nothing(page):
