@@ -3,3 +3,6 @@ __pycache__/
 .pytest_cache/
 .env
 *:Zone.Identifier
+# Local analyst review database (SQLite) — never commit
+reviews.db
+reviews.db-*
