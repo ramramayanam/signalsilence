@@ -185,11 +185,11 @@ need it. The original n8n workflow design is documented in `legacy/`.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests/            # 21 tests: invariants + retrieval + judge harness
+python -m pytest                   # 44 tests; the 4 UI tests are skipped without streamlit
 python evals/run_eval.py           # offline eval, no API key needed
 python evals/run_eval.py --rag     # + precedent retrieval (leave-one-out)
 python evals/run_eval.py --show-misses
-streamlit run app.py               # interactive demo (5 canonical cases)
+streamlit run app.py               # interactive demo + "Analyst Review" page in the sidebar
 
 # Optional: LLM context judgment (RAG precedents ground the prompt)
 export ANTHROPIC_API_KEY=...
@@ -203,6 +203,51 @@ python evals/run_eval.py --rag --judge rationale --judge-sample 20
 pip install sentence-transformers
 SIGNALSILENCE_RETRIEVAL=embedding python evals/run_eval.py --rag
 ```
+
+## Analyst Review workspace (prototype)
+
+**SignalSilence recommends. The analyst decides.** The Analyst Review page
+(`pages/1_Analyst_Review.py`) puts a human decision on top of the unchanged
+triage pipeline.
+
+- **Launch:** `streamlit run app.py`, then open **Analyst Review** in the sidebar.
+- **Queue:** the 5 canonical demo cases, each with its system risk
+  (Low / Review / High), system recommendation (Escalate / Review /
+  Ignore-Monitor) and review status. The 100-case dataset stays an
+  evaluation set and isn't in the queue.
+- **Case view:** the system assessment comes first (lexical and phonetic
+  scores, the four context facts, the rules that fired, and the rules
+  version). It's kept separate from the analyst's decision. Source metadata
+  the data doesn't contain (filing date, application number, owner, link)
+  shows as *Not available* and is never filled in.
+- **Analyst decisions:** **Confirm Flag**, **Dismiss Flag**, or **Refer for
+  Legal Review**, plus an optional note. These are deliberately distinct from
+  the system's *Escalate* recommendation.
+- **Persistence:** a local SQLite file, `reviews.db` (gitignored; override it
+  with `SIGNALSILENCE_REVIEW_DB`). It uses only Python's built-in `sqlite3`.
+- **Append-only history:** each decision is a new row holding a snapshot of
+  the system assessment at that moment and the rules version (`rules-v1`,
+  `POLICY_VERSION` in `policy.py`). Database triggers block updates and
+  deletes, so changing a decision keeps the earlier one, and current status
+  is the latest decision.
+
+Prototype limitations:
+- **No authentication,** so no reviewer identity is recorded. Reviewer
+  identity is deliberately unsupported rather than self-reported.
+- **Single-user, local file.** There's no concurrency control or backup.
+- **Demo data only.** The cases come from the canonical demo set, not a
+  live filing feed.
+- **LLM mode:** when `ANTHROPIC_API_KEY` is set, the assessment is an LLM
+  judgment that can vary between sessions. The decision snapshot records
+  the assessment the analyst actually saw.
+- **Not legal advice.** The page is decision support for preliminary review.
+
+**Regression guard:** `tests/test_regression_baseline.py` pins the default
+(offline, no-retrieval) outputs of all 105 cases (5 demo plus 100 eval) to
+`tests/fixtures/regression_baseline.json`. Any intentional change to the
+outputs must bump `POLICY_VERSION` and regenerate the fixture with
+`python tests/test_regression_baseline.py --update`, and the diff gets
+reviewed in the commit.
 
 ## Human-in-the-loop design (production shape)
 
