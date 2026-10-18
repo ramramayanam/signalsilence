@@ -1,6 +1,6 @@
 # SignalSilence test results
 
-Latest run: Phase 2.2, 2026-10-18, branch `phase2-2/fallback-cache-hardening`
+Latest run: Phase 2.3, 2026-10-18, branch `phase2-3/assessment-consistency`
 (`POLICY_VERSION = "rules-v4"`, `CONTEXT_PROMPT_VERSION = "context-prompt-v2"`, both unchanged).
 All runs are offline (`ANTHROPIC_API_KEY` unset). LLM behavior is tested with a faked SDK;
 no live or paid API calls were made.
@@ -9,8 +9,8 @@ no live or paid API calls were made.
 
 | Environment | Result |
 |---|---|
-| Windows Anaconda, Python 3.12.7, streamlit 1.37.1, no `anthropic` | **124 passed, 1 skipped** (real-SDK exception test needs `anthropic`) |
-| WSL `python3`, Python 3.14.4, `anthropic` 1.2.0, no streamlit | **111 passed, 2 skipped** (`tests/test_review_page.py` and `tests/test_review_retry.py`: 14 UI tests need streamlit) |
+| Windows Anaconda, Python 3.12.7, streamlit 1.37.1, no `anthropic` | **134 passed, 1 skipped** (real-SDK exception test needs `anthropic`) |
+| WSL `python3`, Python 3.14.4, `anthropic` 1.2.0, no streamlit | **112 passed, 10 skipped** (UI tests need streamlit: `test_review_page.py` and `test_review_retry.py` as whole files, plus 8 page tests in `test_review_consistency.py`; its fingerprint unit test runs) |
 
 | File | Tests | Covers |
 |---|---|---|
@@ -19,10 +19,11 @@ no live or paid API calls were made.
 | `test_demo_cases.py` | 2 | the 5-case queue and its pinned outputs (demo_4 and demo_5 notes updated for rules-v3) |
 | `test_regression_baseline.py` | 2 | all 105 default outputs vs. the fixture; fixture matches `POLICY_VERSION` |
 | `test_review_store.py` | 15 | schema and re-init, snapshot, status, history kept on change, notes, append-only triggers, vocabulary, missing data, DB path, gitignored DB, `policy_version` recorded, v1 → v2 schema upgrade |
-| `test_review_page.py` | 7 | Streamlit AppTest: queue and summary, system vs. analyst styling and labels, recording a decision, empty submit, **fallback shown and recorded as `llm_fallback_offline`**, offline recorded as `offline`, **LLM caption and snapshot carry model and prompt version** (2.1) |
+| `test_review_page.py` | 8 | Streamlit AppTest: queue and summary, system vs. analyst styling and labels, recording a decision, empty submit, **fallback shown and recorded as `llm_fallback_offline`**, offline recorded as `offline`, **LLM caption and snapshot carry model and prompt version** (2.1), **every case switch honored** (2.3 bug-fix regression) |
 | `test_filing_volume.py` | 11 | **D3:** loader reads, or omits, `recent_filing_count`; 8-case slice: counts 9 / 10 / 25, blank, 0, I3 firing, volume alone not escalating, I1 masking |
 | `test_llm_fallback.py` | 26 | **D4:** `"false"`/`"true"` parsing; 8 malformed responses; auth, permission, connection, timeout, rate-limit, API and no-key failures; missing package; real SDK classes; no secret leakage; LOW/MONITOR → LOW/REVIEW; REVIEW and ESCALATE not lowered; offline unchanged; fallback mode in the decision record |
 | `test_affiliation.py` | 14 | **D2:** knock-off-style applicant names not affiliated; rules-v2+ risk/action for 5 bad and 1 normal applicant; version is current. **2.1:** the old "LLM claim → I4" test is deliberately inverted (LLM claim ignored) |
+| `test_review_consistency.py` | 9 | **2.3:** two-session race (A sees fallback, B retries, A submits → nothing written, warning, A sees update, note kept); `demo_4` LOW/REVIEW → HIGH/ESCALATE: Dismiss not recorded; resubmit after review → exactly one event with the new snapshot; no false alarm when unchanged; offline records normally; case switching makes no false mismatch; a change while on another case is shown on return without blocking; a blocked submit leaves earlier history untouched; fingerprint helper (exact page code) stable and content-sensitive |
 | `test_review_retry.py` | 7 | **2.2:** with a fake LLM that fails then succeeds: no automatic retry after recovery; retry button only for fallback (not successful LLM or offline); retry makes exactly one call, for the selected case only; other cases stay cached; failed retry stays fallback; successful retry is visible to a new session (shared cache); history keeps the fallback snapshot and then records the LLM snapshot; offline unchanged and never calls the model |
 | `test_llm_affiliation.py` | 19 | **2.1:** rendered and sent prompt has no affiliation question and uses `applicant_entity_type`; a reply without the key is valid; an unexpected `plausible_affiliation` (true, "true", "maybe", null) is ignored; the other 3 facts keep strict parsing; Knockoffs LLC and Athletica Canada stay HIGH/ESCALATE with no I4; the I4 policy rule intact; prompt version and reported or requested model recorded; fallback records the attempt only; offline has no LLM provenance; snapshot keeps prompt version and model |
 
@@ -54,6 +55,7 @@ rules-v2, rules-v3 and rules-v4.
   - **rules-v4 (Phase 2.1):** 0 cases changed (LLM mode only); only the fixture's version
     metadata.
   - **Phase 2.2:** no change (UI and caching only).
+  - **Phase 2.3:** no change (UI submit check and case-switching fix only).
 - Fields pinned: risk, action, lexical, phonetic, semantic (always null), 4 context
   facts, rationale, insight, rule notes.
 - Fields excluded as volatile: LLM output, retrieval precedents, timestamps.
@@ -86,7 +88,5 @@ rules-v2, rules-v3 and rules-v4.
 - Labels are synthetic and author-assigned; eval numbers measure consistency with the
   design, not legal accuracy.
 - Open follow-ups (see `CHANGELOG_SIGNALSILENCE.md`):
-  - submit-time assessment consistency check (cached assessments are shared process-wide,
-    across sessions; another session's retry could change it between display and submit);
   - the eval doesn't summarize fallback counts;
   - the filing-volume time window is ambiguous.

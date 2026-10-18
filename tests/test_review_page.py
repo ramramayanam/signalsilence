@@ -160,3 +160,13 @@ def test_llm_assessment_records_prompt_version_and_model(tmp_path, monkeypatch):
     assert event["assessment_mode"] == "llm"
     assert (snap["llm_model"], snap["prompt_version"]) == ("fake-model-2026", "context-prompt-v2")
     assert snap["context"]["plausible_affiliation"] is False
+
+
+def test_every_case_switch_is_honored(page):
+    """Regression: an unkeyed queue radio with a changing `index` got a new widget
+    identity after each switch, so every other click was silently dropped."""
+    at, _ = page
+    for case_id in ["demo_3", "demo_1", "demo_5", "demo_2", "demo_1", "demo_4"]:
+        at.radio[0].set_value(case_id).run()
+        assert at.radio[0].value == case_id
+        assert f"case {case_id}" in _text(at)
