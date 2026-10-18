@@ -52,9 +52,19 @@ CASES = {c.case_id: (label, c) for label, c in CANONICAL.items()}
 USE_LLM = bool(os.environ.get("ANTHROPIC_API_KEY"))
 MODE_LABEL = {
     "offline": "offline heuristic context judgment",
-    "llm": f"llm context judgment ({os.environ.get('SIGNALSILENCE_MODEL') or 'triage.py default model'})",
+    "llm": "llm context judgment",
     "llm_fallback_offline": "llm_fallback_offline — LLM unavailable, offline context judgment used",
 }
+
+
+def mode_caption(result) -> str:
+    """Mode plus the recorded LLM provenance (model, prompt version), if any."""
+    label = MODE_LABEL[result.assessment_mode]
+    if result.assessment_mode == "llm":
+        return f"{label}: {result.llm_model}, {result.prompt_version}"
+    if result.assessment_mode == "llm_fallback_offline":
+        return f"{label}; attempted {result.llm_model}, {result.prompt_version}"
+    return label
 
 
 @st.cache_data(show_spinner=False)
@@ -141,7 +151,7 @@ with case_col:
 
     with st.container(border=True):
         st.markdown("##### System assessment · SignalSilence recommends")
-        st.caption(f"Produced by SignalSilence ({MODE_LABEL[result.assessment_mode]}; "
+        st.caption(f"Produced by SignalSilence ({mode_caption(result)}; "
                    f"rules version {review_store.POLICY_VERSION}).")
         if result.assessment_mode == "llm_fallback_offline":
             st.warning(f"**LLM unavailable ({result.fallback_reason}).** This is the offline "

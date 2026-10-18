@@ -1,11 +1,14 @@
 # SignalSilence changelog: enhancement round (from 2026-10-17)
 
 Phases 0–1.2 were on branch `phase1/analyst-review-workspace` (based on `main` `1657fbe`,
-merged as `f4e272b`). Phase 2 is on `phase2/decision-engine-hardening`.
+merged as `f4e272b`). Phase 2 is on `phase2/decision-engine-hardening` (merged as `89c9534`).
+Phase 2.1 is on `phase2-1/llm-affiliation-hardening`.
 **Thresholds (0.85 / 0.85 / 0.70), rule order and retrieval behavior are unchanged
-throughout.** Phases 0–1.2 changed no decision output. Phase 2 made deliberate,
-versioned decision-path fixes (`rules-v2`, `rules-v3`). Across the 105 baseline cases the
-only changes are 9 rule-note strings; risk and action are identical. Verified at every step.
+throughout.** Phases 0–1.2 changed no decision output. Phases 2 and 2.1 made deliberate,
+versioned decision-path fixes (`rules-v2`, `rules-v3`, `rules-v4`). Across the 105 offline
+baseline cases the only changes are 9 rule-note strings; risk and action are identical.
+Verified at every step. Current: `POLICY_VERSION = "rules-v4"`,
+`CONTEXT_PROMPT_VERSION = "context-prompt-v2"`.
 
 ## Phase 0: read-only audit
 - Audited the repo against the implementation brief. Findings are in
@@ -125,10 +128,36 @@ simulated impact of each are in `PHASE2_AUDIT.md`.
     The fixture and demo baseline were updated for the 9 notes. The test now requires the
     exact phrase "high similarity".
 
+## Phase 2.1: LLM affiliation hardening (`phase2-1/llm-affiliation-hardening`)
+- `b5ce0bc` **LLM affiliation can no longer be inferred from applicant-name text.**
+  - **The defect:** the old prompt asked the model whether the applicant "plausibly appears
+    affiliated" with the mark owner while giving it only the applicant name. It got no owner
+    name and no relationship data. A model saying "affiliated" capped a HIGH/ESCALATE case at
+    REVIEW/REVIEW via I4; "Lululemon Knockoffs LLC" was one example.
+  - **`rules-v4`:** LLM-mode `plausible_affiliation` is always False, and any such key the
+    model returns is ignored rather than treated as malformed. Rule I4 is kept but now
+    inactive in both modes until an explicit affiliation evidence source exists. Even
+    "Lululemon Athletica Canada Inc" escalates to the analyst.
+  - **Prompt `context-prompt-v2`** (the new `CONTEXT_PROMPT_VERSION`; the previous prompt is
+    `context-prompt-v1`):
+    - asks only the three remaining context questions (goods adjacency, descriptive wording,
+      behavioral signal);
+    - says an applicant name resembling or containing the mark is not evidence of affiliation;
+    - labels the applicant's entity type `applicant_entity_type`. The `Case.owner_entity_type`
+      field is unchanged.
+  - **Provenance:** `TriageResult` gains `prompt_version` and `llm_model`.
+    - `llm_model` is the model the API reports, or the configured/default model requested if
+      the response reports none. It's never invented.
+    - Fallbacks record what was attempted, without presenting a model judgment.
+    - Offline results record neither.
+    - Both fields flow into the Analyst Review caption and the stored decision snapshot.
+  - **All 105 offline outputs unchanged;** the fixture changes only its `policy_version`
+    metadata. The old "LLM claim → I4" test was deliberately inverted.
+
 ## Known follow-ups (recorded, not implemented)
-- **LLM affiliation prompt:** the LLM prompt still asks the model to judge
-  `plausible_affiliation` from the applicant name alone. It needs a separate review so LLM
-  mode doesn't repeat the D2 error.
+- ~~**LLM affiliation prompt**~~: resolved in Phase 2.1 (`rules-v4`, `context-prompt-v2`).
+  A future explicit affiliation evidence source (for example a protected-mark owner or
+  known-affiliate list) would be needed to reactivate I4.
 - **Fallback caching:** fallback results stay cached for the session. The Analyst Review page
   caches assessments per process, so a transient LLM failure stays a fallback until the
   cache clears or the app restarts.

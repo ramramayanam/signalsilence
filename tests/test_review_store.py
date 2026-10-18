@@ -160,7 +160,7 @@ def test_review_database_is_gitignored_and_untracked():
 
 def test_policy_version_is_recorded_on_each_event(db):
     from signalsilence.policy import POLICY_VERSION
-    assert POLICY_VERSION == "rules-v3"
+    assert POLICY_VERSION == "rules-v4"
     _record(db)
     [event] = review_store.case_history(db, "demo_1")
     assert event["policy_version"] == POLICY_VERSION
@@ -201,7 +201,7 @@ def test_v1_database_upgrades_additively(tmp_path):
     _record(path, "demo_1", "dismiss_flag")
     old, new = review_store.case_history(path, "demo_1")
     assert old["analyst_note"] == "v1 note" and old["policy_version"] is None
-    assert new["policy_version"] == "rules-v3"
+    assert new["policy_version"] == "rules-v4"
     assert review_store.review_status(path, "demo_1") == "Dismissed"
     with closing(sqlite3.connect(path)) as conn:
         assert conn.execute("PRAGMA user_version").fetchone()[0] == 2

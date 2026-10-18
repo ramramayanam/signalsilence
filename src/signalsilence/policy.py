@@ -22,8 +22,14 @@ from .schema import Action, ContextJudgment, Risk, SimilarityScores
 #   rules-v3  corrected high-similarity context-override rule-note
 #             provenance (D1): strong-but-unrelated cases now record
 #             "I5: high similarity ... (context override)".
-#   Thresholds, rule order, risk and action behavior unchanged in v2 and v3.
-POLICY_VERSION = "rules-v3"
+#   rules-v4  LLM affiliation claims are no longer accepted without explicit
+#             affiliation evidence: LLM-mode plausible_affiliation is always
+#             False (Case has no such evidence), so I4 is dormant in both
+#             modes until an explicit evidence source exists.
+#   Thresholds and rule order unchanged in v2-v4; offline risk/action
+#   unchanged in v3-v4. (The LLM prompt is versioned separately:
+#   triage.CONTEXT_PROMPT_VERSION.)
+POLICY_VERSION = "rules-v4"
 
 STRONG_PHONETIC = 0.85   # "Phonetic similarity >= 0.85 counts as strong similarity"
 STRONG_LEXICAL = 0.85

@@ -4,8 +4,8 @@ Before rules-v2, any applicant name containing the protected word or
 "subsidiary"/"franchise"/"official" counted as plausibly affiliated, and
 policy I4 then capped the case at REVIEW. Case has no explicit
 affiliation field, so offline affiliation is now never established.
-The I4 rule itself is unchanged and still applies when LLM mode asserts
-affiliation.
+The I4 rule itself is unchanged; since rules-v4 the LLM cannot assert
+affiliation either, so I4 is dormant in both modes (see test_llm_affiliation.py).
 """
 import sys
 from pathlib import Path
@@ -43,7 +43,7 @@ def _case(row):
 
 
 def test_policy_version_is_current():
-    assert POLICY_VERSION == "rules-v3"  # D2 shipped in rules-v2; current is v3
+    assert POLICY_VERSION == "rules-v4"  # D2 shipped in rules-v2; current is v4
 
 
 @pytest.mark.parametrize("row", CASES, ids=IDS)
@@ -60,12 +60,14 @@ def test_rules_v2_risk_and_action(row):
     assert not any(n.startswith("I4") for n in r.invariant_notes)
 
 
-def test_llm_asserted_affiliation_still_applies_i4(monkeypatch):
-    """I4 is unchanged: when the LLM asserts affiliation, the carve-out still applies."""
+def test_llm_asserted_affiliation_is_ignored_since_rules_v4(monkeypatch):
+    """rules-v4 deliberately reverses the old behavior (LLM claim -> I4 REVIEW):
+    an LLM affiliation claim is not evidence, so I4 does not fire."""
     from test_llm_fallback import _reply, fake_anthropic
     monkeypatch.setitem(sys.modules, "anthropic",
                         fake_anthropic(_reply(goods_adjacent=True, plausible_affiliation=True)))
     r = triage(_case(CASES[-1]), use_llm=True)
     assert r.assessment_mode == "llm"
-    assert (r.risk.value, r.action.value) == ("review", "review")
-    assert r.invariant_notes[0].startswith("I4")
+    assert r.context.plausible_affiliation is False
+    assert (r.risk.value, r.action.value) == ("high", "escalate")
+    assert not any(n.startswith("I4") for n in r.invariant_notes)

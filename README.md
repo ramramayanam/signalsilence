@@ -16,9 +16,11 @@ deterministic policy.
 
 1. **Deterministic where possible, LLM only where necessary.** Lexical and
    phonetic similarity are classical algorithms (Jaro-Winkler, Double
-   Metaphone) — reproducible, testable, free. The LLM judges only four
+   Metaphone) — reproducible, testable, free. The LLM judges only three
    contextual questions the algorithms cannot: goods adjacency, descriptive
-   wording, plausible affiliation, behavioral signal.
+   wording, behavioral signal. Affiliation is not inferred in either mode
+   (rules-v4): an applicant name is not evidence, and no explicit
+   affiliation source exists yet.
 2. **The LLM does not decide risk.** It returns structured context facts;
    `policy.py` — the instruction-set invariants as code — makes the
    classification. A persuasive but wrong model output cannot move a risk
@@ -226,7 +228,7 @@ triage pipeline.
 - **Persistence:** a local SQLite file, `reviews.db` (gitignored; override it
   with `SIGNALSILENCE_REVIEW_DB`). It uses only Python's built-in `sqlite3`.
 - **Append-only history:** each decision is a new row holding a snapshot of
-  the system assessment at that moment and the rules version (`rules-v3`,
+  the system assessment at that moment and the rules version (`rules-v4`,
   `POLICY_VERSION` in `policy.py`). Database triggers block updates and
   deletes, so changing a decision keeps the earlier one, and current status
   is the latest decision.
