@@ -1,8 +1,11 @@
 # SignalSilence changelog: enhancement round (from 2026-10-17)
 
-Work is on branch `phase1/analyst-review-workspace`, based on GitHub `main` `1657fbe`.
-**Scoring is unchanged throughout:** no thresholds, rule order, retrieval
-behavior or default outputs were modified (verified on all 105 cases at every step).
+Phases 0–1.2 were on branch `phase1/analyst-review-workspace` (based on `main` `1657fbe`,
+merged as `f4e272b`). Phase 2 is on `phase2/decision-engine-hardening`.
+**Thresholds (0.85 / 0.85 / 0.70), rule order and retrieval behavior are unchanged
+throughout.** Phases 0–1.2 changed no decision output. Phase 2 made deliberate,
+versioned decision-path fixes (`rules-v2`, `rules-v3`). Across the 105 baseline cases the
+only changes are 9 rule-note strings; risk and action are identical. Verified at every step.
 
 ## Phase 0: read-only audit
 - Audited the repo against the implementation brief. Findings are in
@@ -71,8 +74,66 @@ behavior or default outputs were modified (verified on all 105 cases at every st
 - No changes to scoring, policy, retrieval, review-store semantics, decision choices or the
   105 regression outputs.
 
-## Known issues deliberately left open (see `CURRENT_STATE.md` §10)
-- **D1:** the "high similarity … context override" note is unreachable.
-- **D2:** offline affiliation matching is too permissive (protected word in applicant name → REVIEW cap).
-- **D3:** the eval loader drops filing count (the dataset has no such column).
-- **D4:** LLM/API errors other than JSON parsing aren't caught.
+## Phase 2: decision-engine hardening (`phase2/decision-engine-hardening`)
+Each fix was done in order D3 → D4 → D2 → D1, with tests written first. Rationale and the
+simulated impact of each are in `PHASE2_AUDIT.md`.
+
+- `2a05dba` **Audit.** `PHASE2_AUDIT.md` gives root causes, smallest fixes and the
+  simulated 105-case impact for D1–D4.
+- `6a2dfd6` **D3: filing-volume evaluation plumbing.**
+  - `evals/run_eval.py` `load_cases` now reads an optional `recent_filing_count` column
+    (blank or missing → `None`) instead of dropping it. The current CSV has no such column,
+    so the outputs are unchanged.
+  - `tests/test_filing_volume.py` runs an 8-case synthetic slice through a CSV and the real
+    loader:
+    - counts 9 / 10 / 25, blank and 0;
+    - I3 actually firing (strong and moderate similarity);
+    - volume alone not escalating a dissimilar mark;
+    - I1 masking the signal.
+- `1b044f6` **D4: LLM failure handling and provenance.**
+  - **Failures no longer crash.** Missing package, auth, rate limit, timeout, connection,
+    other API errors and malformed responses fall back to the offline judgment, labelled
+    `assessment_mode = "llm_fallback_offline"` with a type-based `fallback_reason`.
+    Exception text is never stored.
+  - **Risk and action on fallback:** risk is kept, MONITOR is raised to REVIEW, and REVIEW
+    and ESCALATE are never lowered.
+  - **Strict booleans:** facts must be JSON booleans or the strings `"true"` / `"false"`.
+    `"false"` used to become True.
+  - **Provenance:** `TriageResult` gains `assessment_mode` and `fallback_reason`. The
+    Analyst Review page shows and records the mode that actually ran. Offline mode is
+    unchanged and labelled `offline`.
+- `f74af97` **D2: offline affiliation fix, `rules-v2`.**
+  - **The change:** offline mode no longer infers affiliation from applicant-name text.
+    `Case` has no explicit affiliation field, so offline affiliation is not established.
+    Rule I4 still applies when LLM mode asserts affiliation.
+  - **Effect on real inputs:**
+    - "Lululemon Knockoffs LLC", "Nikesh Patel", "Batavia Shoe Supply" and "Official
+      Athletic Wear LLC" go from REVIEW/REVIEW to HIGH/ESCALATE.
+    - "Lululemon Fan Club" no longer has its action raised to REVIEW.
+    - No baseline case is affected.
+  - **Version:** `POLICY_VERSION` becomes `rules-v2`, now defined as covering the full
+    deterministic decision path (offline heuristics plus policy rules).
+- `f1119a9` **D1: high-similarity provenance fix, `rules-v3`.**
+  - **The bug:** strong similarity always passed the moderate test first, so the
+    "high similarity … (context override)" note was unreachable.
+  - **The fix:** the I5 path now chooses its note by `strong_similarity`, and the dead branch
+    is removed.
+  - **Effect:** only rule-note text changes, in 9 baseline cases (`demo_4`, `demo_5`,
+    `case_015`, `case_019`, `case_021`, `case_027`, `case_032`, `case_038`, `case_043`).
+    Risk, action and insight are unchanged.
+  - **Version:** bumped to `rules-v3` because rule notes are stored in decision provenance.
+    The fixture and demo baseline were updated for the 9 notes. The test now requires the
+    exact phrase "high similarity".
+
+## Known follow-ups (recorded, not implemented)
+- **LLM affiliation prompt:** the LLM prompt still asks the model to judge
+  `plausible_affiliation` from the applicant name alone. It needs a separate review so LLM
+  mode doesn't repeat the D2 error.
+- **Fallback caching:** fallback results stay cached for the session. The Analyst Review page
+  caches assessments per process, so a transient LLM failure stays a fallback until the
+  cache clears or the app restarts.
+- **Eval fallback counts:** in LLM mode, eval reporting doesn't summarize how many cases fell
+  back, or why, so fallback cases (with raised actions) are mixed into the metrics.
+- **Filing-volume window:** the time window is ambiguous. The threshold is
+  `recent_filing_count >= 10`, but the UI says "last 12 months" and the NIKKE demo label says
+  "30 days". A labelled filing-volume eval slice is also still deferred.
