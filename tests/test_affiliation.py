@@ -42,8 +42,8 @@ def _case(row):
     return Case(*row[:8])
 
 
-def test_policy_version_is_rules_v2():
-    assert POLICY_VERSION == "rules-v2"
+def test_policy_version_is_current():
+    assert POLICY_VERSION == "rules-v3"  # D2 shipped in rules-v2; current is v3
 
 
 @pytest.mark.parametrize("row", CASES, ids=IDS)

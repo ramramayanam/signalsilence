@@ -231,7 +231,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.98,
    "phonetic": 1.0,
@@ -295,7 +295,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.93,
    "phonetic": 1.0,
@@ -327,7 +327,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.85,
    "phonetic": 0.54,
@@ -423,7 +423,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.88,
    "phonetic": 0.7,
@@ -503,7 +503,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.87,
    "phonetic": 0.67,
@@ -599,7 +599,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.85,
    "phonetic": 0.72,
@@ -679,7 +679,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.9,
    "phonetic": 0.7,
@@ -1657,7 +1657,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.9,
    "phonetic": 0.85,
@@ -1673,7 +1673,7 @@
    "goods_adjacent": false,
    "insight": "offline heuristic judgment",
    "invariant_notes": [
-    "I5: similarity present but goods unrelated, no signal -> LOW"
+    "I5: high similarity but unrelated goods -> LOW (context override)"
    ],
    "lexical": 0.78,
    "phonetic": 1.0,
@@ -1684,5 +1684,5 @@
   }
  },
  "mode": "offline context judgment, no retrieval (triage use_llm=False)",
- "policy_version": "rules-v2"
+ "policy_version": "rules-v3"
 }

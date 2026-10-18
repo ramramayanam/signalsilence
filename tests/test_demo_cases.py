@@ -1,7 +1,8 @@
 """Regression baseline for the 5 canonical demo cases (offline mode).
 
 Expected values were recorded from the unmodified pipeline at commit
-1657fbe (Phase 0.5). If one of these fails, a change has altered
+1657fbe (Phase 0.5); demo_4/demo_5 notes updated for rules-v3 (D1).
+If one of these fails, a change has altered
 existing scoring output — that requires explicit approval, not an
 edit to this file.
 """
@@ -23,9 +24,9 @@ BASELINE = {
                 "I2a: descriptive added wording ignored for risk reduction",
                 "I2b: absence of behavioral signal does not reduce risk"]),
     "demo_4": ("low", "ignore/monitor", 0.9, 0.85,
-               ["I5: similarity present but goods unrelated, no signal -> LOW"]),
+               ["I5: high similarity but unrelated goods -> LOW (context override)"]),
     "demo_5": ("low", "ignore/monitor", 0.78, 1.0,
-               ["I5: similarity present but goods unrelated, no signal -> LOW"]),
+               ["I5: high similarity but unrelated goods -> LOW (context override)"]),
 }
 
 

@@ -83,7 +83,15 @@ def test_high_similarity_unrelated_goods_is_low():
     risk, action, notes = classify(s, ctx(adjacent=False), same_class=False)
     assert risk == Risk.LOW and action == Action.MONITOR
     # Enforcement: similarity is still stated truthfully in the audit trail.
-    assert any("high similarity" in n or "similarity" in n for n in notes)
+    assert any("high similarity" in n for n in notes), notes
+
+
+def test_moderate_similarity_unrelated_goods_is_not_called_high():
+    """Below the strong threshold the note must not claim 'high similarity'."""
+    s = SimilarityScores(lexical=0.78, phonetic=0.60)
+    risk, action, notes = classify(s, ctx(adjacent=False), same_class=False)
+    assert risk == Risk.LOW and action == Action.MONITOR
+    assert not any("high similarity" in n for n in notes), notes
 
 
 # --- AFFILIATION carve-out ---

@@ -226,7 +226,7 @@ triage pipeline.
 - **Persistence:** a local SQLite file, `reviews.db` (gitignored; override it
   with `SIGNALSILENCE_REVIEW_DB`). It uses only Python's built-in `sqlite3`.
 - **Append-only history:** each decision is a new row holding a snapshot of
-  the system assessment at that moment and the rules version (`rules-v2`,
+  the system assessment at that moment and the rules version (`rules-v3`,
   `POLICY_VERSION` in `policy.py`). Database triggers block updates and
   deletes, so changing a decision keeps the earlier one, and current status
   is the latest decision.
