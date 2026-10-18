@@ -10,9 +10,11 @@ system assessment and the analyst decision in separate panels. System
 values use red/orange/green/gray badges; analyst status uses blue, so a
 system "Escalate" never reads as an analyst decision.
 """
+import hashlib
 import json
 import os
 import sys
+from dataclasses import asdict
 from pathlib import Path
 
 import streamlit as st
@@ -65,6 +67,17 @@ def mode_caption(result) -> str:
     if result.assessment_mode == "llm_fallback_offline":
         return f"{label}; attempted {result.llm_model}, {result.prompt_version}"
     return label
+
+
+def assessment_fingerprint(result) -> str:
+    """SHA-256 of the full TriageResult as canonical JSON (sorted keys, compact).
+
+    Identical assessments always hash the same; any change to any field
+    (risk, scores, context, notes, mode, model, ...) changes the hash.
+    """
+    canonical = json.dumps(asdict(result), sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=False, default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 @st.cache_data(show_spinner=False)
@@ -218,19 +231,37 @@ with case_col:
                 captions=[DECISION_HELP[d] for d in review_store.DECISIONS],
             )
             note = st.text_area("Note (optional)", max_chars=1000, height=80,
+                                value=st.session_state.get(f"pending_note_{case_id}", ""),
                                 placeholder="e.g. Same class but unrelated goods.")
             submitted = st.form_submit_button("Record decision", type="primary")
 
+        # Submit-time consistency: the cache is shared across sessions, so the
+        # assessment can change (e.g. another session's retry) between what this
+        # analyst saw and this submit rerun. Record only if it is unchanged.
+        shown_key = f"shown_fp_{case_id}"
+        current_fp = assessment_fingerprint(result)
         if submitted:
             if decision is None:
                 st.warning("Choose a decision before recording.")
+            elif st.session_state.get(shown_key) != current_fp:
+                st.session_state[shown_key] = current_fp  # next submit is against this one
+                st.session_state[f"pending_note_{case_id}"] = note
+                st.session_state["assessment_changed"] = case_id
+                st.rerun()
             else:
                 review_store.record_decision(DB_PATH, case, result, decision, note,
                                              assessment_mode=result.assessment_mode)
+                st.session_state.pop(f"pending_note_{case_id}", None)
                 st.session_state["recorded"] = (
                     f"{review_store.DECISIONS[decision]} recorded for {case_id}.")
                 st.rerun()
+        st.session_state[shown_key] = current_fp  # what this analyst is now shown
 
+        if st.session_state.get("assessment_changed") == case_id:
+            del st.session_state["assessment_changed"]
+            st.warning("The system assessment changed since you reviewed this case. "
+                       "Please review the updated assessment below and record your "
+                       "decision again.")
         if "recorded" in st.session_state:
             st.success(st.session_state.pop("recorded"))
 
