@@ -10,6 +10,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
+from signalsilence.demo_cases import CANONICAL  # noqa: E402
 from signalsilence.schema import Case  # noqa: E402
 from signalsilence.triage import triage  # noqa: E402
 
@@ -17,24 +18,6 @@ st.set_page_config(page_title="SignalSilence", page_icon="🔕")
 st.title("SignalSilence")
 st.caption("AI trademark triage that learns when to stay silent. "
            "Similarity generates alerts; context and behavior decide.")
-
-CANONICAL = {
-    "LULULEMMON — near-identical, same class": Case(
-        "demo_1", "LULULEMON", "LULULEMMON", "025", "clothing",
-        "Global Brand Holdings Ltd", "corporation", True, recent_filing_count=2),
-    "NIKKE — behavioral signal (18 filings / 30 days)": Case(
-        "demo_2", "NIKE", "NIKKE", "025", "clothing",
-        "Global Brand Holdings Ltd", "corporation", True, recent_filing_count=18),
-    "BAATA LACES — adjacency across classes": Case(
-        "demo_3", "BATA", "BAATA LACES", "026", "shoelaces",
-        "Standard", "corporation", False, recent_filing_count=0),
-    "LULULIME juice bar — high similarity, unrelated goods": Case(
-        "demo_4", "LULULEMON", "LULULIME", "043", "juice bar / food service",
-        "Local small business", "individual", False, recent_filing_count=0),
-    "PHISH vs FISH — phonetic edge case": Case(
-        "demo_5", "PHISH", "FISH", "043", "juice bar / food service",
-        "Local small business", "individual", False, recent_filing_count=0),
-}
 
 tab_demo, tab_custom = st.tabs(["Canonical cases", "Try your own"])
 
