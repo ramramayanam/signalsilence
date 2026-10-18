@@ -113,13 +113,18 @@ with queue_col:
         f"{len(CASES)} cases · {risks.count('high')} high · "
         f"{risks.count('review')} review · {risks.count('low')} low · "
         f"{len(latest)} reviewed")
-    # The radio's captions change when a decision is recorded, which makes
-    # Streamlit treat it as a new widget; remembering the selection here
-    # keeps the analyst on the same case.
+    # The radio's captions change when a decision is recorded or a case is
+    # retried, which makes Streamlit treat it as a new widget. A changing
+    # `index` did the same and dropped every other click, so the selection
+    # lives in session state under a stable key and is re-applied before
+    # the widget is created.
     selected = st.session_state.setdefault("selected_case", next(iter(CASES)))
+    if st.session_state.get("case_select") in CASES:   # the analyst's latest click
+        selected = st.session_state["case_select"]
+    st.session_state["case_select"] = selected
     with st.container(border=True):
         case_id = st.radio(
-            "Open case", list(CASES), index=list(CASES).index(selected),
+            "Open case", list(CASES), key="case_select",
             format_func=lambda cid: (f"**{CASES[cid][1].protected_mark}** vs "
                                      f"**{CASES[cid][1].candidate_mark}**"),
             captions=[
