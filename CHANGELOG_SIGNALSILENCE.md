@@ -3,7 +3,8 @@
 Phases 0–1.2 were on branch `phase1/analyst-review-workspace` (based on `main` `1657fbe`,
 merged as `f4e272b`). Phase 2 is on `phase2/decision-engine-hardening` (merged as `89c9534`).
 Phase 2.1 is on `phase2-1/llm-affiliation-hardening` (merged as `4889600`). Phase 2.2 is on
-`phase2-2/fallback-cache-hardening`.
+`phase2-2/fallback-cache-hardening` (merged as `7bafe5d`). Phase 2.3 is on
+`phase2-3/assessment-consistency`.
 **Thresholds (0.85 / 0.85 / 0.70), rule order and retrieval behavior are unchanged
 throughout.** Phases 0–1.2 changed no decision output. Phases 2 and 2.1 made deliberate,
 versioned decision-path fixes (`rules-v2`, `rules-v3`, `rules-v4`). Across the 105 offline
@@ -177,6 +178,34 @@ simulated impact of each are in `PHASE2_AUDIT.md`.
     (`context-prompt-v2`), scoring, prompts, SQLite and the 105 offline outputs. UI and
     caching only.
 
+## Phase 2.3: submit-time assessment consistency (`phase2-3/assessment-consistency`)
+- `88e49c9` **Analyst Review case-switching fix (separate bug, found while testing 2.3).**
+  - **The bug:** the queue radio had no key and passed `index=<current selection>`. A
+    changing `index` gives an unkeyed Streamlit widget a new identity, so **every other case
+    switch was silently dropped** and the analyst had to click twice. It was introduced in
+    Phase 1.2.
+  - **The fix:** the selection now lives in session state under a stable key
+    (`case_select`) and is re-applied before the widget is created. This also keeps the
+    analyst on the same case after a decision or retry changes the captions.
+  - **Test:** a regression test switches cases six times in a row.
+- `f3fa981` **Stale-assessment protection on Record decision.**
+  - **The problem:** the shared, process-wide cache means another session's retry could
+    replace a case's assessment between what analyst A saw and A's submit. A's decision was
+    then recorded against an assessment A never saw. Reproduced: A dismissed a LOW/REVIEW
+    fallback, and the record showed a HIGH/ESCALATE LLM assessment.
+  - **The fix:**
+    - The page keeps, per case, a SHA-256 fingerprint of the assessment actually shown: the
+      canonical JSON (sorted keys) of the full `TriageResult`.
+    - On submit it compares that with the current assessment. If they match, the decision is
+      recorded normally.
+    - If they differ, **nothing is written**. The analyst sees the updated assessment and
+      *"The system assessment changed since you reviewed this case. Please review the updated
+      assessment below and record your decision again."* Their note is kept, and the next
+      submit records against the assessment now on screen.
+  - **Scope:** the fingerprint helper is local to the page and isn't stored. No change to
+    SQLite, `review_store`, scoring, prompts, `POLICY_VERSION` (`rules-v4`),
+    `CONTEXT_PROMPT_VERSION` (`context-prompt-v2`) or the 105 offline outputs.
+
 ## Known follow-ups (recorded, not implemented)
 - ~~**LLM affiliation prompt**~~: resolved in Phase 2.1 (`rules-v4`, `context-prompt-v2`).
   A future explicit affiliation evidence source (for example a protected-mark owner or
@@ -184,10 +213,9 @@ simulated impact of each are in `PHASE2_AUDIT.md`.
 - ~~**Fallback caching**~~: resolved in Phase 2.2. Assessments are cached process-wide,
   across sessions (not per session, as first recorded). A fallback can now be retried
   explicitly per case.
-- **Submit-time assessment consistency check:** the decision snapshot uses the cached
-  assessment at submit time. If another session retries a case between display and submit,
-  the recorded snapshot could differ from what this analyst saw. A possible fix: record only
-  when a fingerprint of the displayed assessment still matches, else ask for re-review.
+- ~~**Submit-time assessment consistency check**~~: resolved in Phase 2.3 (`f3fa981`). A
+  decision is recorded only if the displayed assessment's fingerprint still matches;
+  otherwise the analyst is asked to re-review.
 - **Eval fallback counts:** in LLM mode, eval reporting doesn't summarize how many cases fell
   back, or why, so fallback cases (with raised actions) are mixed into the metrics.
 - **Filing-volume window:** the time window is ambiguous. The threshold is
