@@ -2,7 +2,8 @@
 
 Phases 0–1.2 were on branch `phase1/analyst-review-workspace` (based on `main` `1657fbe`,
 merged as `f4e272b`). Phase 2 is on `phase2/decision-engine-hardening` (merged as `89c9534`).
-Phase 2.1 is on `phase2-1/llm-affiliation-hardening`.
+Phase 2.1 is on `phase2-1/llm-affiliation-hardening` (merged as `4889600`). Phase 2.2 is on
+`phase2-2/fallback-cache-hardening`.
 **Thresholds (0.85 / 0.85 / 0.70), rule order and retrieval behavior are unchanged
 throughout.** Phases 0–1.2 changed no decision output. Phases 2 and 2.1 made deliberate,
 versioned decision-path fixes (`rules-v2`, `rules-v3`, `rules-v4`). Across the 105 offline
@@ -154,13 +155,39 @@ simulated impact of each are in `PHASE2_AUDIT.md`.
   - **All 105 offline outputs unchanged;** the fixture changes only its `policy_version`
     metadata. The old "LLM claim → I4" test was deliberately inverted.
 
+## Phase 2.2: fallback cache hardening (`phase2-2/fallback-cache-hardening`)
+- **Explicit per-case "Retry LLM assessment".** Analyst Review caches assessments with
+  `st.cache_data`, keyed by `(case_id, use_llm)`.
+  - **The problem:** the cache is **cached process-wide, across sessions**, with no expiry,
+    so an `llm_fallback_offline` result from a temporary LLM failure stayed for every viewer
+    until restart.
+  - **When the button shows:** only when the selected case's assessment is
+    `llm_fallback_offline`. Fallbacks are **never retried automatically**.
+  - **What a click does:** clears only that case's cache entry (`assess.clear(case_id,
+    USE_LLM)`), then reruns the page. That's one new model call for that case.
+    - The other four cases are not cleared or re-called, and neither are successful LLM or
+      offline results.
+    - A successful retry shows the LLM assessment ("Retry succeeded") and, because the cache
+      is shared, is visible to other sessions.
+    - A failed retry stays a labelled `llm_fallback_offline` (D4 behavior, "Retry failed
+      (reason)"), with no crash.
+  - **Decision history is append-only and untouched:** decisions recorded before the retry
+    keep their fallback snapshot, and later ones record the LLM snapshot.
+  - **Unchanged:** `POLICY_VERSION` (`rules-v4`), `CONTEXT_PROMPT_VERSION`
+    (`context-prompt-v2`), scoring, prompts, SQLite and the 105 offline outputs. UI and
+    caching only.
+
 ## Known follow-ups (recorded, not implemented)
 - ~~**LLM affiliation prompt**~~: resolved in Phase 2.1 (`rules-v4`, `context-prompt-v2`).
   A future explicit affiliation evidence source (for example a protected-mark owner or
   known-affiliate list) would be needed to reactivate I4.
-- **Fallback caching:** fallback results stay cached for the session. The Analyst Review page
-  caches assessments per process, so a transient LLM failure stays a fallback until the
-  cache clears or the app restarts.
+- ~~**Fallback caching**~~: resolved in Phase 2.2. Assessments are cached process-wide,
+  across sessions (not per session, as first recorded). A fallback can now be retried
+  explicitly per case.
+- **Submit-time assessment consistency check:** the decision snapshot uses the cached
+  assessment at submit time. If another session retries a case between display and submit,
+  the recorded snapshot could differ from what this analyst saw. A possible fix: record only
+  when a fingerprint of the displayed assessment still matches, else ask for re-review.
 - **Eval fallback counts:** in LLM mode, eval reporting doesn't summarize how many cases fell
   back, or why, so fallback cases (with raised actions) are mixed into the metrics.
 - **Filing-volume window:** the time window is ambiguous. The threshold is
