@@ -12,6 +12,11 @@ pipeline and its outputs are untouched by this module.
 
 No reviewer identity is stored: the app has no authentication, and an
 unverified name would be a fabricated audit field.
+
+Schema history (additive only):
+  v1  review_events table, append-only triggers.
+  v2  + policy_version column (rules version at decision time). Rows
+      written under v1 keep NULL: their rules version was not recorded.
 """
 import json
 import os
@@ -21,9 +26,10 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .policy import POLICY_VERSION
 from .schema import Case, TriageResult
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 # Analyst decision vocabulary. Deliberately distinct from the system's
 # Action.ESCALATE recommendation: the analyst never "escalates", they
@@ -51,6 +57,7 @@ CREATE TABLE IF NOT EXISTS review_events (
     lexical_similarity  REAL,
     phonetic_similarity REAL,
     assessment_mode     TEXT,
+    policy_version      TEXT,
     system_snapshot     TEXT NOT NULL,
     analyst_decision    TEXT NOT NULL CHECK (analyst_decision IN
                             ('confirm_flag', 'dismiss_flag', 'refer_legal_review')),
@@ -81,10 +88,13 @@ def _connect(db_path) -> sqlite3.Connection:
 
 
 def init_db(db_path) -> None:
-    """Create the schema if missing. Safe to run repeatedly; never drops or alters data."""
+    """Create or upgrade the schema. Safe to run repeatedly; never drops or alters data."""
     with closing(_connect(db_path)) as conn, conn:
         conn.executescript(_SCHEMA)
-        if conn.execute("PRAGMA user_version").fetchone()[0] == 0:
+        columns = {r["name"] for r in conn.execute("PRAGMA table_info(review_events)")}
+        if "policy_version" not in columns:  # v1 database: additive upgrade
+            conn.execute("ALTER TABLE review_events ADD COLUMN policy_version TEXT")
+        if conn.execute("PRAGMA user_version").fetchone()[0] < SCHEMA_VERSION:
             conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
 
 
@@ -93,25 +103,28 @@ def record_decision(db_path, case: Case, result: TriageResult, decision: str,
                     assessment_mode: str | None = None) -> int:
     """Append one analyst decision with a snapshot of the system assessment.
 
-    Returns the new event_id. A blank note is stored as NULL.
+    Returns the new event_id. A blank note is stored as NULL. The rules
+    version is policy.POLICY_VERSION: the assessment being reviewed was
+    produced by the policy module loaded in this process.
     """
     if decision not in DECISIONS:
         raise ValueError(f"unknown analyst decision: {decision!r}")
     note = (note or "").strip() or None
-    snapshot = {"case_inputs": asdict(case), "system_assessment": asdict(result)}
+    snapshot = {"case_inputs": asdict(case), "system_assessment": asdict(result),
+                "policy_version": POLICY_VERSION}
     init_db(db_path)
     with closing(_connect(db_path)) as conn, conn:
         cur = conn.execute(
             """INSERT INTO review_events (
                    case_id, protected_mark, candidate_mark, system_risk,
                    system_action, lexical_similarity, phonetic_similarity,
-                   assessment_mode, system_snapshot, analyst_decision,
-                   analyst_note, recorded_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                   assessment_mode, policy_version, system_snapshot,
+                   analyst_decision, analyst_note, recorded_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (case.case_id, case.protected_mark, case.candidate_mark,
              result.risk.value, result.action.value,
              result.scores.lexical, result.scores.phonetic,
-             assessment_mode, json.dumps(snapshot, sort_keys=True),
+             assessment_mode, POLICY_VERSION, json.dumps(snapshot, sort_keys=True),
              decision, note,
              datetime.now(timezone.utc).isoformat(timespec="seconds")),
         )

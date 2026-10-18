@@ -12,6 +12,12 @@ the instruction it implements.
 """
 from .schema import Action, ContextJudgment, Risk, SimilarityScores
 
+# Provenance label for the rules below (thresholds + invariant order).
+# Recorded with every analyst decision. Bump it whenever a change to this
+# module alters classification output, together with the regression
+# fixture in tests/fixtures/.
+POLICY_VERSION = "rules-v1"
+
 STRONG_PHONETIC = 0.85   # "Phonetic similarity >= 0.85 counts as strong similarity"
 STRONG_LEXICAL = 0.85
 MODERATE = 0.70

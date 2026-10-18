@@ -8,6 +8,7 @@ import shutil
 import sqlite3
 import subprocess
 import sys
+from contextlib import closing
 from pathlib import Path
 
 import pytest
@@ -153,3 +154,56 @@ def test_review_database_is_gitignored_and_untracked():
     tracked = subprocess.run(["git", "ls-files", "reviews.db*", "*.db"], cwd=REPO,
                              capture_output=True, text=True, check=True).stdout
     assert tracked == ""
+
+
+# --- Rules version provenance (schema v2) ---
+
+def test_policy_version_is_recorded_on_each_event(db):
+    from signalsilence.policy import POLICY_VERSION
+    assert POLICY_VERSION == "rules-v1"
+    _record(db)
+    [event] = review_store.case_history(db, "demo_1")
+    assert event["policy_version"] == POLICY_VERSION
+    assert json.loads(event["system_snapshot"])["policy_version"] == POLICY_VERSION
+
+
+# Exact DDL shipped in commit 1954d11 (schema v1), to prove upgrades are safe.
+_V1_SCHEMA = """
+CREATE TABLE review_events (
+    event_id INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT NOT NULL,
+    protected_mark TEXT NOT NULL, candidate_mark TEXT NOT NULL,
+    system_risk TEXT NOT NULL, system_action TEXT NOT NULL,
+    lexical_similarity REAL, phonetic_similarity REAL, assessment_mode TEXT,
+    system_snapshot TEXT NOT NULL,
+    analyst_decision TEXT NOT NULL CHECK (analyst_decision IN
+        ('confirm_flag', 'dismiss_flag', 'refer_legal_review')),
+    analyst_note TEXT, recorded_at TEXT NOT NULL);
+CREATE TRIGGER review_events_no_update BEFORE UPDATE ON review_events
+    BEGIN SELECT RAISE(ABORT, 'review_events is append-only'); END;
+CREATE TRIGGER review_events_no_delete BEFORE DELETE ON review_events
+    BEGIN SELECT RAISE(ABORT, 'review_events is append-only'); END;
+PRAGMA user_version = 1;
+INSERT INTO review_events (case_id, protected_mark, candidate_mark, system_risk,
+    system_action, lexical_similarity, phonetic_similarity, assessment_mode,
+    system_snapshot, analyst_decision, analyst_note, recorded_at)
+VALUES ('demo_1', 'LULULEMON', 'LULULEMMON', 'high', 'escalate', 0.98, 1.0,
+    'offline heuristic context judgment', '{}', 'confirm_flag', 'v1 note',
+    '2026-10-17T00:00:00+00:00');
+"""
+
+
+def test_v1_database_upgrades_additively(tmp_path):
+    path = tmp_path / "v1.db"
+    with closing(sqlite3.connect(path)) as conn:
+        conn.executescript(_V1_SCHEMA)
+    review_store.init_db(path)
+    review_store.init_db(path)  # repeated upgrade is a no-op
+    _record(path, "demo_1", "dismiss_flag")
+    old, new = review_store.case_history(path, "demo_1")
+    assert old["analyst_note"] == "v1 note" and old["policy_version"] is None
+    assert new["policy_version"] == "rules-v1"
+    assert review_store.review_status(path, "demo_1") == "Dismissed"
+    with closing(sqlite3.connect(path)) as conn:
+        assert conn.execute("PRAGMA user_version").fetchone()[0] == 2
+        with pytest.raises(sqlite3.DatabaseError, match="append-only"):
+            conn.execute("DELETE FROM review_events")

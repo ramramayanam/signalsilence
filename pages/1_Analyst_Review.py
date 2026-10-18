@@ -79,7 +79,8 @@ result = assess(case_id, USE_LLM)
 
 st.divider()
 st.subheader("System assessment")
-st.caption(f"Produced by SignalSilence ({ASSESSMENT_MODE}).")
+st.caption(f"Produced by SignalSilence ({ASSESSMENT_MODE}; rules version "
+           f"{review_store.POLICY_VERSION}).")
 st.markdown(
     f"**{case.protected_mark}** (protected) vs **{case.candidate_mark}** (new filing) — "
     f":{RISK_COLOR[result.risk.value]}[**RISK: {result.risk.value.upper()}**]"
@@ -155,13 +156,15 @@ else:
             "Note": e["analyst_note"] or "",
             "System risk then": e["system_risk"].title(),
             "System recommendation then": e["system_action"].title(),
+            "Rules version": e["policy_version"] or NOT_AVAILABLE,
         } for e in reversed(history)],
         hide_index=True, use_container_width=True,
     )
     with st.expander("Full stored snapshot of the latest decision"):
         st.json(json.loads(history[-1]["system_snapshot"]))
     st.caption("Decisions are append-only: a new decision adds a row; earlier "
-               "decisions are kept. No reviewer identity is recorded (no sign-in).")
+               "decisions are kept. Reviewer identity is not supported: the app "
+               "has no sign-in, so no reviewer is recorded.")
 
 st.caption("This is an AI-assisted assessment for preliminary review and "
            "does not constitute legal advice.")
