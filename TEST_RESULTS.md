@@ -1,26 +1,36 @@
 # SignalSilence test results
 
-Latest run: Phase 1.2 (UI polish), 2026-10-17, branch `phase1/analyst-review-workspace`.
-Results are unchanged from Phase 1.1 except for the updated UI tests noted below.
-All runs are offline (`ANTHROPIC_API_KEY` unset). LLM mode was not exercised.
+Latest run: Phase 2 closeout, 2026-10-18, branch `phase2/decision-engine-hardening`
+(after `f1119a9`, `POLICY_VERSION = "rules-v3"`).
+All runs are offline (`ANTHROPIC_API_KEY` unset). LLM behavior is tested with a faked SDK;
+no live or paid API calls were made.
 
 ## Test suite (bare `pytest` from the repo root)
 
 | Environment | Result |
 |---|---|
-| Windows Anaconda, Python 3.12.7, streamlit 1.37.1 | **44 passed** |
-| WSL `python3`, Python 3.14.4, no streamlit | **40 passed, 1 skipped** (`tests/test_review_page.py`: 4 UI tests need streamlit) |
+| Windows Anaconda, Python 3.12.7, streamlit 1.37.1, no `anthropic` | **97 passed, 1 skipped** (real-SDK exception test needs `anthropic`) |
+| WSL `python3`, Python 3.14.4, `anthropic` 1.2.0, no streamlit | **92 passed, 1 skipped** (`tests/test_review_page.py`: 6 UI tests need streamlit) |
 
 | File | Tests | Covers |
 |---|---|---|
-| `test_policy.py` | 12 | v2 instruction-set invariants (unchanged) |
+| `test_policy.py` | 13 | v2 instruction-set invariants. Phase 2: the high-similarity test now requires the exact phrase "high similarity", plus a moderate-only negative test |
 | `test_retrieval_and_judge.py` | 9 | BM25 retrieval, leave-one-out, judge parsing (unchanged) |
-| `test_demo_cases.py` | 2 | the 5-case queue and its baseline outputs |
+| `test_demo_cases.py` | 2 | the 5-case queue and its pinned outputs (demo_4 and demo_5 notes updated for rules-v3) |
 | `test_regression_baseline.py` | 2 | all 105 default outputs vs. the fixture; fixture matches `POLICY_VERSION` |
-| `test_review_store.py` | 15 | schema creation and re-init, decision snapshot, status, history kept on change, notes, append-only triggers, vocabulary, missing data, DB path, DB gitignored and untracked, `policy_version` recorded, v1 → v2 upgrade |
-| `test_review_page.py` | 4 | Streamlit AppTest: queue list and summary, system (gray) vs. analyst (blue) styling and decision labels, recording a decision (stays on the same case afterwards), empty submit. Updated in Phase 1.2 for the new layout |
+| `test_review_store.py` | 15 | schema and re-init, snapshot, status, history kept on change, notes, append-only triggers, vocabulary, missing data, DB path, gitignored DB, `policy_version` recorded, v1 → v2 schema upgrade |
+| `test_review_page.py` | 6 | Streamlit AppTest: queue and summary, system vs. analyst styling and labels, recording a decision, empty submit, **fallback shown and recorded as `llm_fallback_offline`**, offline recorded as `offline` |
+| `test_filing_volume.py` | 11 | **D3:** loader reads, or omits, `recent_filing_count`; 8-case slice: counts 9 / 10 / 25, blank, 0, I3 firing, volume alone not escalating, I1 masking |
+| `test_llm_fallback.py` | 26 | **D4:** `"false"`/`"true"` parsing; 8 malformed responses; auth, permission, connection, timeout, rate-limit, API and no-key failures; missing package; real SDK classes; no secret leakage; LOW/MONITOR → LOW/REVIEW; REVIEW and ESCALATE not lowered; offline unchanged; fallback mode in the decision record |
+| `test_affiliation.py` | 14 | **D2:** knock-off-style applicant names not affiliated; rules-v2+ risk/action for 5 bad and 1 normal applicant; LLM-asserted affiliation still applies I4; version is current |
 
 All tests that touch the database use a temporary SQLite file.
+
+I checked each new Phase 2 test against the code before its fix (in a scratch copy) to
+confirm it catches the defect:
+- D3: 6 of 11 fail;
+- D2: 11 of 14 fail;
+- D1: the tightened test fails.
 
 ## Evaluation (100 synthetic labeled cases)
 
@@ -29,35 +39,46 @@ All tests that touch the database use a temporary SQLite file.
 | `run_eval.py` (default) | 75.0% | `[[50,0,0],[15,7,8],[2,0,18]]` | 2 |
 | `run_eval.py --rag` | 78.0% | `[[50,0,0],[10,8,12],[0,0,20]]` | 0 |
 
-Both outputs are byte-identical to the Phase 0.5 baseline (`1657fbe`).
+Both outputs are byte-identical to the Phase 0.5 baseline (`1657fbe`), including after
+rules-v2 and rules-v3.
 
 ## Output regression (105 cases = 5 demo + 100 eval)
 
-- Committed fixture: `tests/fixtures/regression_baseline.json`. It **matches**.
-- Independent check: the fixture equals a snapshot taken during Phase 0.5 from the
-  untouched `bfddd5b` and `1657fbe` code. **0 of 105 cases differ** on every field.
+- The committed fixture `tests/fixtures/regression_baseline.json` (`rules-v3`) **matches**.
+- Change history against the original `1657fbe` baseline:
+  - **rules-v2 (D2):** 0 cases changed; only the fixture's version metadata.
+  - **rules-v3 (D1):** 9 cases changed `invariant_notes` only (the "high similarity …
+    (context override)" wording). **Risk, action and insight are identical in all 105.**
 - Fields pinned: risk, action, lexical, phonetic, semantic (always null), 4 context
   facts, rationale, insight, rule notes.
 - Fields excluded as volatile: LLM output, retrieval precedents, timestamps.
+- Final checks:
+  - `POLICY_VERSION = "rules-v3"`;
+  - thresholds 0.85 / 0.85 / 0.70;
+  - rule order I4 → I1 → I2 → (I3, I6, I5) → default, unchanged.
 
 ## Manual / UI checks
-- Ran the app headless (Phase 1) and captured screenshots with headless Chrome:
-  - the queue rendered;
-  - recommendation and decision were separated;
-  - history updated after a decision.
+- Phase 1: ran the app headless and captured screenshots with headless Chrome.
+  - The queue rendered.
+  - Recommendation and decision were separated.
+  - History updated after a decision.
 - A throwaway database in the Windows temp folder was used, so no `reviews.db` was
   created in the repo.
-- Phase 1.2: I re-checked the polished page with headless Chrome screenshots at 1600 px,
-  before and after sample decisions (throwaway database).
-  - It has the two-column layout, and the risk and status badges render.
-  - The history table shows every column except the end of the note, which scrolls; the
-    full latest note appears in the "Latest decision" box.
-  - Found and fixed: recording a decision used to reset the queue selection to the first
-    case. The recording test now covers this.
+- Phase 1.2: re-checked the polished page at 1600 px, before and after sample decisions.
+  - The two-column layout and badges render.
+  - The latest note appears in full in the "Latest decision" box.
+  - Found and fixed: the queue selection used to reset after recording.
+- Phase 2: the fallback warning and provenance are covered by AppTest. No new screenshots.
 
 ## Known limitations of this testing
-- LLM mode, the `--judge` evals and the embedding retrieval backend were not run (they
-  need an API key or extra packages).
-- UI tests run only where streamlit is installed.
+- Live LLM mode, the `--judge` evals and the embedding retrieval backend were not run (they
+  need an API key or extra packages). LLM failure paths are tested with fakes only.
+- UI tests run only where streamlit is installed. The real-SDK exception test runs only where
+  `anthropic` is installed.
 - Labels are synthetic and author-assigned; eval numbers measure consistency with the
   design, not legal accuracy.
+- Open follow-ups (see `CHANGELOG_SIGNALSILENCE.md`):
+  - the LLM affiliation prompt still needs review;
+  - fallback results are cached for the session;
+  - the eval doesn't summarize fallback counts;
+  - the filing-volume time window is ambiguous.

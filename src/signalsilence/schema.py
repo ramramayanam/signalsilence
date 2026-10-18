@@ -67,3 +67,7 @@ class TriageResult:
     insight: str = ""
     invariant_notes: list = field(default_factory=list)  # policy enforcement audit trail
     precedents: list = field(default_factory=list)  # retrieved precedents (RAG), for audit
+    # Provenance: "offline", "llm", or "llm_fallback_offline" (LLM attempted
+    # but unavailable; offline context judgment used instead).
+    assessment_mode: str = "offline"
+    fallback_reason: Optional[str] = None  # safe category only, never exception text

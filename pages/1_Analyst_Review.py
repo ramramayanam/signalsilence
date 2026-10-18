@@ -46,13 +46,15 @@ DB_PATH = review_store.default_db_path()
 review_store.init_db(DB_PATH)
 
 CASES = {c.case_id: (label, c) for label, c in CANONICAL.items()}
-# Same mode selection triage() makes on its own, made explicit so the
-# decision record can say which context judgment produced the assessment.
+# Same mode selection triage() makes on its own. What actually ran (llm,
+# offline, or llm_fallback_offline) comes back on each result and is what
+# the page shows and the decision record stores.
 USE_LLM = bool(os.environ.get("ANTHROPIC_API_KEY"))
-ASSESSMENT_MODE = (
-    f"llm context judgment ({os.environ.get('SIGNALSILENCE_MODEL') or 'triage.py default model'})"
-    if USE_LLM else "offline heuristic context judgment"
-)
+MODE_LABEL = {
+    "offline": "offline heuristic context judgment",
+    "llm": f"llm context judgment ({os.environ.get('SIGNALSILENCE_MODEL') or 'triage.py default model'})",
+    "llm_fallback_offline": "llm_fallback_offline — LLM unavailable, offline context judgment used",
+}
 
 
 @st.cache_data(show_spinner=False)
@@ -139,8 +141,12 @@ with case_col:
 
     with st.container(border=True):
         st.markdown("##### System assessment · SignalSilence recommends")
-        st.caption(f"Produced by SignalSilence ({ASSESSMENT_MODE}; rules version "
-                   f"{review_store.POLICY_VERSION}).")
+        st.caption(f"Produced by SignalSilence ({MODE_LABEL[result.assessment_mode]}; "
+                   f"rules version {review_store.POLICY_VERSION}).")
+        if result.assessment_mode == "llm_fallback_offline":
+            st.warning(f"**LLM unavailable ({result.fallback_reason}).** This is the offline "
+                       "assessment, not an LLM judgment. Risk is unchanged; a Monitor "
+                       "recommendation is raised to Review so the case gets human review.")
         m1, m2 = st.columns(2)
         m1.metric("Lexical similarity", f"{result.scores.lexical:.2f}")
         m2.metric("Phonetic similarity", f"{result.scores.phonetic:.2f}")
@@ -186,7 +192,7 @@ with case_col:
                 st.warning("Choose a decision before recording.")
             else:
                 review_store.record_decision(DB_PATH, case, result, decision, note,
-                                             assessment_mode=ASSESSMENT_MODE)
+                                             assessment_mode=result.assessment_mode)
                 st.session_state["recorded"] = (
                     f"{review_store.DECISIONS[decision]} recorded for {case_id}.")
                 st.rerun()

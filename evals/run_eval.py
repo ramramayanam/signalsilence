@@ -26,6 +26,12 @@ from signalsilence.triage import triage  # noqa: E402
 LABELS = ["low", "review", "high"]
 
 
+def _optional_int(value):
+    """Blank or missing -> None (unknown), else int. Unknown is not 0."""
+    value = (value or "").strip()
+    return int(value) if value else None
+
+
 def load_cases(path):
     with open(path, newline="") as f:
         for row in csv.DictReader(f):
@@ -40,6 +46,9 @@ def load_cases(path):
                 goods_class_overlap=row["goods_class_overlap"].strip().lower() == "true",
                 string_similarity_score=float(row["string_similarity_score"]),
                 phonetic_match_score=float(row["phonetic_match_score"]),
+                # Optional column: behavioral signal input (offline threshold
+                # in triage.py). Absent from data/synthetic_cases.csv today.
+                recent_filing_count=_optional_int(row.get("recent_filing_count")),
                 ground_truth_label=row["ground_truth_label"].strip().lower(),
             )
 

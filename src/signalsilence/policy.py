@@ -12,11 +12,18 @@ the instruction it implements.
 """
 from .schema import Action, ContextJudgment, Risk, SimilarityScores
 
-# Provenance label for the rules below (thresholds + invariant order).
-# Recorded with every analyst decision. Bump it whenever a change to this
-# module alters classification output, together with the regression
-# fixture in tests/fixtures/.
-POLICY_VERSION = "rules-v1"
+# Provenance label for the full deterministic decision path: the offline
+# context heuristics in triage.py plus the rules below (thresholds and
+# invariant order). Recorded with every analyst decision. Bump it whenever
+# a change to either alters recorded deterministic output (risk, action or
+# rule-note evidence), together with the regression fixture in tests/fixtures/.
+#   rules-v1  original rules (thresholds 0.85 / 0.70, invariants I1-I6).
+#   rules-v2  removed offline applicant-name affiliation inference (D2).
+#   rules-v3  corrected high-similarity context-override rule-note
+#             provenance (D1): strong-but-unrelated cases now record
+#             "I5: high similarity ... (context override)".
+#   Thresholds, rule order, risk and action behavior unchanged in v2 and v3.
+POLICY_VERSION = "rules-v3"
 
 STRONG_PHONETIC = 0.85   # "Phonetic similarity >= 0.85 counts as strong similarity"
 STRONG_LEXICAL = 0.85
@@ -73,11 +80,13 @@ def classify(s: SimilarityScores, ctx: ContextJudgment, same_class: bool):
         if adjacent:
             notes.append("I6: moderate similarity + related goods -> MEDIUM")
             return Risk.REVIEW, Action.REVIEW, notes
-        notes.append("I5: similarity present but goods unrelated, no signal -> LOW")
-        return Risk.LOW, Action.MONITOR, notes
-
-    if strong_similarity(s) and not adjacent:
-        notes.append("I5: high similarity but unrelated goods -> LOW (context override)")
+        # Enforcement rule: if similarity is high but risk is low, say
+        # "high similarity" explicitly. Strong similarity always reaches
+        # this block (0.85 >= MODERATE), so the wording is chosen here.
+        if strong_similarity(s):
+            notes.append("I5: high similarity but unrelated goods -> LOW (context override)")
+        else:
+            notes.append("I5: similarity present but goods unrelated, no signal -> LOW")
         return Risk.LOW, Action.MONITOR, notes
 
     notes.append("default: weak similarity, no signals -> LOW")
