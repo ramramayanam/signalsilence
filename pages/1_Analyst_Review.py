@@ -69,7 +69,13 @@ def mode_caption(result) -> str:
 
 @st.cache_data(show_spinner=False)
 def assess(case_id: str, use_llm: bool):
-    """Cached so LLM mode does not re-call the API on every rerun."""
+    """Cached so LLM mode does not re-call the API on every rerun.
+
+    The cache is process-wide (shared by all sessions) and has no expiry,
+    so an llm_fallback_offline result stays until it is explicitly
+    retried (see "Retry LLM assessment" below); fallbacks are never
+    retried automatically.
+    """
     return triage(CASES[case_id][1], use_llm=use_llm)
 
 
@@ -153,10 +159,23 @@ with case_col:
         st.markdown("##### System assessment · SignalSilence recommends")
         st.caption(f"Produced by SignalSilence ({mode_caption(result)}; "
                    f"rules version {review_store.POLICY_VERSION}).")
+        retried = st.session_state.pop("retried_case", None) == case_id
+        if retried and result.assessment_mode != "llm_fallback_offline":
+            st.success("Retry succeeded: this is now the LLM assessment.")
         if result.assessment_mode == "llm_fallback_offline":
+            if retried:
+                st.warning(f"Retry failed ({result.fallback_reason}); still the offline fallback.")
             st.warning(f"**LLM unavailable ({result.fallback_reason}).** This is the offline "
                        "assessment, not an LLM judgment. Risk is unchanged; a Monitor "
                        "recommendation is raised to Review so the case gets human review.")
+            # Explicit, per-case retry: clears only this case's cache entry and
+            # makes one new model call. Other cases and earlier decisions are
+            # untouched; the result is shared with all sessions.
+            if st.button("Retry LLM assessment", key=f"retry_{case_id}",
+                         help="Calls the model again for this case only."):
+                assess.clear(case_id, USE_LLM)
+                st.session_state["retried_case"] = case_id
+                st.rerun()
         m1, m2 = st.columns(2)
         m1.metric("Lexical similarity", f"{result.scores.lexical:.2f}")
         m2.metric("Phonetic similarity", f"{result.scores.phonetic:.2f}")

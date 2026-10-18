@@ -29,6 +29,10 @@ def page(tmp_path, monkeypatch):
     return at, db
 
 
+def record_button(at):
+    return next(b for b in at.button if b.label == "Record decision")
+
+
 def _text(at):
     return " ".join(str(e.value) for e in
                     list(at.markdown) + list(at.info) + list(at.caption) + list(at.subheader))
@@ -98,7 +102,7 @@ def test_llm_fallback_is_shown_and_recorded_as_fallback(tmp_path, monkeypatch):
         assert any("LLM unavailable (rate_limit)" in str(w.value) for w in at.warning)
         assert "llm_fallback_offline" in _text(at)
         at.radio(key="decision_demo_4").set_value("dismiss_flag")
-        at.button[0].click().run()
+        record_button(at).click().run()
         assert not at.exception
     finally:
         st.cache_data.clear()
