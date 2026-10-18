@@ -1,0 +1,1688 @@
+{
+ "cases": {
+  "case_001": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.9,
+   "phonetic": 0.85,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_002": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.98,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_003": {
+   "action": "escalate",
+   "added_wording_descriptive": true,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 1.0,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_004": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.96,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_005": {
+   "action": "escalate",
+   "added_wording_descriptive": true,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.96,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_006": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.98,
+   "phonetic": 0.85,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_007": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.96,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_008": {
+   "action": "escalate",
+   "added_wording_descriptive": true,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.96,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_009": {
+   "action": "escalate",
+   "added_wording_descriptive": true,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.98,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_010": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.93,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_011": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.96,
+   "phonetic": 0.85,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_012": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.96,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_013": {
+   "action": "escalate",
+   "added_wording_descriptive": true,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.98,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_014": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.94,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_015": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": true,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.98,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_016": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.96,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_017": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.96,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_018": {
+   "action": "escalate",
+   "added_wording_descriptive": true,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.98,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_019": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.93,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_020": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.98,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_021": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.85,
+   "phonetic": 0.54,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_022": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.85,
+   "phonetic": 0.67,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_023": {
+   "action": "review",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I6: moderate similarity + related goods -> MEDIUM"
+   ],
+   "lexical": 0.84,
+   "phonetic": 0.54,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "review",
+   "semantic": null
+  },
+  "case_024": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.84,
+   "phonetic": 0.54,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_025": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.67,
+   "phonetic": 0.49,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_026": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.63,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_027": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.88,
+   "phonetic": 0.7,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_028": {
+   "action": "review",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I6: moderate similarity + related goods -> MEDIUM"
+   ],
+   "lexical": 0.84,
+   "phonetic": 0.73,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "review",
+   "semantic": null
+  },
+  "case_029": {
+   "action": "review",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I6: moderate similarity + related goods -> MEDIUM"
+   ],
+   "lexical": 0.84,
+   "phonetic": 0.67,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "review",
+   "semantic": null
+  },
+  "case_030": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.69,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_031": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.67,
+   "phonetic": 0.54,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_032": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.87,
+   "phonetic": 0.67,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_033": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.65,
+   "phonetic": 0.49,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_034": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.9,
+   "phonetic": 0.76,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_035": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.88,
+   "phonetic": 0.65,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_036": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.85,
+   "phonetic": 0.7,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_037": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.88,
+   "phonetic": 0.59,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_038": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.85,
+   "phonetic": 0.72,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_039": {
+   "action": "review",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I6: moderate similarity + related goods -> MEDIUM"
+   ],
+   "lexical": 0.84,
+   "phonetic": 0.59,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "review",
+   "semantic": null
+  },
+  "case_040": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.88,
+   "phonetic": 0.7,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_041": {
+   "action": "review",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I6: moderate similarity + related goods -> MEDIUM"
+   ],
+   "lexical": 0.84,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "review",
+   "semantic": null
+  },
+  "case_042": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.84,
+   "phonetic": 0.54,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_043": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.9,
+   "phonetic": 0.7,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_044": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.63,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_045": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.9,
+   "phonetic": 0.7,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_046": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.69,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_047": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.63,
+   "phonetic": 0.49,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_048": {
+   "action": "review",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I6: moderate similarity + related goods -> MEDIUM"
+   ],
+   "lexical": 0.82,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "review",
+   "semantic": null
+  },
+  "case_049": {
+   "action": "review",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I6: moderate similarity + related goods -> MEDIUM"
+   ],
+   "lexical": 0.84,
+   "phonetic": 0.54,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "review",
+   "semantic": null
+  },
+  "case_050": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.88,
+   "phonetic": 0.76,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "case_051": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.61,
+   "phonetic": 0.54,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_052": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.42,
+   "phonetic": 0.41,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_053": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.49,
+   "phonetic": 0.41,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_054": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.69,
+   "phonetic": 0.48,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_055": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.0,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_056": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.61,
+   "phonetic": 0.48,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_057": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.56,
+   "phonetic": 0.4,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_058": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.6,
+   "phonetic": 0.48,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_059": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.54,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_060": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.52,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_061": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.0,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_062": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.57,
+   "phonetic": 0.5,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_063": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.57,
+   "phonetic": 0.48,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_064": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.49,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_065": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.52,
+   "phonetic": 0.41,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_066": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.44,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_067": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.43,
+   "phonetic": 0.4,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_068": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.56,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_069": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.43,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_070": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.61,
+   "phonetic": 0.48,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_071": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.54,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_072": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.47,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_073": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.45,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_074": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.5,
+   "phonetic": 0.41,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_075": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.44,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_076": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.43,
+   "phonetic": 0.41,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_077": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.46,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_078": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.54,
+   "phonetic": 0.41,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_079": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.56,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_080": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.47,
+   "phonetic": 0.38,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_081": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.43,
+   "phonetic": 0.4,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_082": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.31,
+   "phonetic": 0.39,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_083": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.57,
+   "phonetic": 0.6,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_084": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.47,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_085": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.52,
+   "phonetic": 0.41,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_086": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.47,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_087": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.59,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_088": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.61,
+   "phonetic": 0.48,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_089": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.61,
+   "phonetic": 0.48,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_090": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.54,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_091": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.44,
+   "phonetic": 0.39,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_092": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.57,
+   "phonetic": 0.39,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_093": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.47,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_094": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.54,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_095": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.61,
+   "phonetic": 0.51,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_096": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.53,
+   "phonetic": 0.48,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_097": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.47,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_098": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.56,
+   "phonetic": 0.49,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_099": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.54,
+   "phonetic": 0.43,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "case_100": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "default: weak similarity, no signals -> LOW"
+   ],
+   "lexical": 0.44,
+   "phonetic": 0.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "demo_1": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.98,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "demo_2": {
+   "action": "escalate",
+   "added_wording_descriptive": false,
+   "behavioral_signal": true,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I1: strong/near-identical mark + same class -> HIGH"
+   ],
+   "lexical": 0.95,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "demo_3": {
+   "action": "escalate",
+   "added_wording_descriptive": true,
+   "behavioral_signal": false,
+   "goods_adjacent": true,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I2: strong similarity + adjacent goods -> HIGH (non-downgradable)",
+    "I2a: descriptive added wording ignored for risk reduction",
+    "I2b: absence of behavioral signal does not reduce risk"
+   ],
+   "lexical": 0.88,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "high",
+   "semantic": null
+  },
+  "demo_4": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.9,
+   "phonetic": 0.85,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  },
+  "demo_5": {
+   "action": "ignore/monitor",
+   "added_wording_descriptive": false,
+   "behavioral_signal": false,
+   "goods_adjacent": false,
+   "insight": "offline heuristic judgment",
+   "invariant_notes": [
+    "I5: similarity present but goods unrelated, no signal -> LOW"
+   ],
+   "lexical": 0.78,
+   "phonetic": 1.0,
+   "plausible_affiliation": false,
+   "rationale": "offline heuristic judgment",
+   "risk": "low",
+   "semantic": null
+  }
+ },
+ "mode": "offline context judgment, no retrieval (triage use_llm=False)",
+ "policy_version": "rules-v1"
+}
