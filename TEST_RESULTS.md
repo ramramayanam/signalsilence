@@ -1,7 +1,7 @@
 # SignalSilence test results
 
-Latest run: Phase 2 closeout, 2026-10-18, branch `phase2/decision-engine-hardening`
-(after `f1119a9`, `POLICY_VERSION = "rules-v3"`).
+Latest run: Phase 2.1 closeout, 2026-10-18, branch `phase2-1/llm-affiliation-hardening`
+(after `b5ce0bc`, `POLICY_VERSION = "rules-v4"`, `CONTEXT_PROMPT_VERSION = "context-prompt-v2"`).
 All runs are offline (`ANTHROPIC_API_KEY` unset). LLM behavior is tested with a faked SDK;
 no live or paid API calls were made.
 
@@ -9,8 +9,8 @@ no live or paid API calls were made.
 
 | Environment | Result |
 |---|---|
-| Windows Anaconda, Python 3.12.7, streamlit 1.37.1, no `anthropic` | **97 passed, 1 skipped** (real-SDK exception test needs `anthropic`) |
-| WSL `python3`, Python 3.14.4, `anthropic` 1.2.0, no streamlit | **92 passed, 1 skipped** (`tests/test_review_page.py`: 6 UI tests need streamlit) |
+| Windows Anaconda, Python 3.12.7, streamlit 1.37.1, no `anthropic` | **117 passed, 1 skipped** (real-SDK exception test needs `anthropic`) |
+| WSL `python3`, Python 3.14.4, `anthropic` 1.2.0, no streamlit | **111 passed, 1 skipped** (`tests/test_review_page.py`: 7 UI tests need streamlit) |
 
 | File | Tests | Covers |
 |---|---|---|
@@ -19,10 +19,11 @@ no live or paid API calls were made.
 | `test_demo_cases.py` | 2 | the 5-case queue and its pinned outputs (demo_4 and demo_5 notes updated for rules-v3) |
 | `test_regression_baseline.py` | 2 | all 105 default outputs vs. the fixture; fixture matches `POLICY_VERSION` |
 | `test_review_store.py` | 15 | schema and re-init, snapshot, status, history kept on change, notes, append-only triggers, vocabulary, missing data, DB path, gitignored DB, `policy_version` recorded, v1 → v2 schema upgrade |
-| `test_review_page.py` | 6 | Streamlit AppTest: queue and summary, system vs. analyst styling and labels, recording a decision, empty submit, **fallback shown and recorded as `llm_fallback_offline`**, offline recorded as `offline` |
+| `test_review_page.py` | 7 | Streamlit AppTest: queue and summary, system vs. analyst styling and labels, recording a decision, empty submit, **fallback shown and recorded as `llm_fallback_offline`**, offline recorded as `offline`, **LLM caption and snapshot carry model and prompt version** (2.1) |
 | `test_filing_volume.py` | 11 | **D3:** loader reads, or omits, `recent_filing_count`; 8-case slice: counts 9 / 10 / 25, blank, 0, I3 firing, volume alone not escalating, I1 masking |
 | `test_llm_fallback.py` | 26 | **D4:** `"false"`/`"true"` parsing; 8 malformed responses; auth, permission, connection, timeout, rate-limit, API and no-key failures; missing package; real SDK classes; no secret leakage; LOW/MONITOR → LOW/REVIEW; REVIEW and ESCALATE not lowered; offline unchanged; fallback mode in the decision record |
-| `test_affiliation.py` | 14 | **D2:** knock-off-style applicant names not affiliated; rules-v2+ risk/action for 5 bad and 1 normal applicant; LLM-asserted affiliation still applies I4; version is current |
+| `test_affiliation.py` | 14 | **D2:** knock-off-style applicant names not affiliated; rules-v2+ risk/action for 5 bad and 1 normal applicant; version is current. **2.1:** the old "LLM claim → I4" test is deliberately inverted (LLM claim ignored) |
+| `test_llm_affiliation.py` | 19 | **2.1:** rendered and sent prompt has no affiliation question and uses `applicant_entity_type`; a reply without the key is valid; an unexpected `plausible_affiliation` (true, "true", "maybe", null) is ignored; the other 3 facts keep strict parsing; Knockoffs LLC and Athletica Canada stay HIGH/ESCALATE with no I4; the I4 policy rule intact; prompt version and reported or requested model recorded; fallback records the attempt only; offline has no LLM provenance; snapshot keeps prompt version and model |
 
 All tests that touch the database use a temporary SQLite file.
 
@@ -40,20 +41,22 @@ confirm it catches the defect:
 | `run_eval.py --rag` | 78.0% | `[[50,0,0],[10,8,12],[0,0,20]]` | 0 |
 
 Both outputs are byte-identical to the Phase 0.5 baseline (`1657fbe`), including after
-rules-v2 and rules-v3.
+rules-v2, rules-v3 and rules-v4.
 
 ## Output regression (105 cases = 5 demo + 100 eval)
 
-- The committed fixture `tests/fixtures/regression_baseline.json` (`rules-v3`) **matches**.
+- The committed fixture `tests/fixtures/regression_baseline.json` (`rules-v4`) **matches**.
 - Change history against the original `1657fbe` baseline:
   - **rules-v2 (D2):** 0 cases changed; only the fixture's version metadata.
   - **rules-v3 (D1):** 9 cases changed `invariant_notes` only (the "high similarity …
     (context override)" wording). **Risk, action and insight are identical in all 105.**
+  - **rules-v4 (Phase 2.1):** 0 cases changed (LLM mode only); only the fixture's version
+    metadata.
 - Fields pinned: risk, action, lexical, phonetic, semantic (always null), 4 context
   facts, rationale, insight, rule notes.
 - Fields excluded as volatile: LLM output, retrieval precedents, timestamps.
 - Final checks:
-  - `POLICY_VERSION = "rules-v3"`;
+  - `POLICY_VERSION = "rules-v4"`, `CONTEXT_PROMPT_VERSION = "context-prompt-v2"`;
   - thresholds 0.85 / 0.85 / 0.70;
   - rule order I4 → I1 → I2 → (I3, I6, I5) → default, unchanged.
 
@@ -68,17 +71,19 @@ rules-v2 and rules-v3.
   - The two-column layout and badges render.
   - The latest note appears in full in the "Latest decision" box.
   - Found and fixed: the queue selection used to reset after recording.
-- Phase 2: the fallback warning and provenance are covered by AppTest. No new screenshots.
+- Phase 2 / 2.1: the fallback warning and the LLM provenance caption are covered by AppTest.
+  No new screenshots.
 
 ## Known limitations of this testing
 - Live LLM mode, the `--judge` evals and the embedding retrieval backend were not run (they
-  need an API key or extra packages). LLM failure paths are tested with fakes only.
+  need an API key or extra packages). LLM success and failure paths are tested with fakes only,
+  so real-model compliance with `context-prompt-v2` hasn't been measured. Affiliation doesn't
+  depend on it: it's enforced in code.
 - UI tests run only where streamlit is installed. The real-SDK exception test runs only where
   `anthropic` is installed.
 - Labels are synthetic and author-assigned; eval numbers measure consistency with the
   design, not legal accuracy.
 - Open follow-ups (see `CHANGELOG_SIGNALSILENCE.md`):
-  - the LLM affiliation prompt still needs review;
   - fallback results are cached for the session;
   - the eval doesn't summarize fallback counts;
   - the filing-volume time window is ambiguous.
