@@ -1684,5 +1684,5 @@
   }
  },
  "mode": "offline context judgment, no retrieval (triage use_llm=False)",
- "policy_version": "rules-v3"
+ "policy_version": "rules-v4"
 }

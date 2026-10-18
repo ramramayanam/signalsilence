@@ -115,3 +115,44 @@ def test_offline_decision_is_recorded_as_offline(page):
     at.button[0].click().run()
     [event] = review_store.case_history(db, "demo_1")
     assert event["assessment_mode"] == "offline"
+
+
+def test_llm_assessment_records_prompt_version_and_model(tmp_path, monkeypatch):
+    """A successful (fake) LLM assessment shows and stores its provenance."""
+    import types
+    import streamlit as st
+
+    class Client:
+        @property
+        def messages(self):
+            return self
+
+        def create(self, **kwargs):
+            text = json.dumps({"goods_adjacent": True, "added_wording_descriptive": False,
+                               "behavioral_signal": False, "plausible_affiliation": True,
+                               "rationale": "fake model rationale"})
+            return types.SimpleNamespace(model="fake-model-2026",
+                                         content=[types.SimpleNamespace(type="text", text=text)])
+
+    fake = types.ModuleType("anthropic")
+    fake.AnthropicError = type("AnthropicError", (Exception,), {})
+    fake.Anthropic = Client
+    db = tmp_path / "reviews.db"
+    monkeypatch.setenv("SIGNALSILENCE_REVIEW_DB", str(db))
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key-not-real")
+    monkeypatch.setitem(sys.modules, "anthropic", fake)
+    st.cache_data.clear()
+    try:
+        at = AppTest.from_file(PAGE, default_timeout=30).run()
+        assert not at.exception
+        assert "llm context judgment: fake-model-2026, context-prompt-v2" in _text(at)
+        at.radio(key="decision_demo_1").set_value("confirm_flag")
+        at.button[0].click().run()
+        assert not at.exception
+    finally:
+        st.cache_data.clear()
+    [event] = review_store.case_history(db, "demo_1")
+    snap = json.loads(event["system_snapshot"])["system_assessment"]
+    assert event["assessment_mode"] == "llm"
+    assert (snap["llm_model"], snap["prompt_version"]) == ("fake-model-2026", "context-prompt-v2")
+    assert snap["context"]["plausible_affiliation"] is False

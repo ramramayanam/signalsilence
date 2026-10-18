@@ -2,15 +2,19 @@
 
 Two context-judgment backends:
 
-  * LLM mode (ANTHROPIC_API_KEY set): the model judges ONLY the four
+  * LLM mode (ANTHROPIC_API_KEY set): the model judges ONLY three
     contextual questions the deterministic layer cannot answer —
-    goods adjacency, descriptive wording, plausible affiliation,
-    behavioral signal. It returns strict JSON. It does NOT decide risk;
-    policy.py does. This keeps the LLM inside a fence: persuasive prose
-    cannot move a classification, only structured context facts can.
+    goods adjacency, descriptive wording, behavioral signal. It returns
+    strict JSON. It does NOT decide risk; policy.py does. This keeps the
+    LLM inside a fence: persuasive prose cannot move a classification,
+    only structured context facts can.
 
   * Offline mode (no key): transparent heuristics approximate the same
-    four judgments so the full pipeline, evals, and demo run at zero cost.
+    judgments so the full pipeline, evals, and demo run at zero cost.
+
+Affiliation is not established in either mode (rules-v2 offline, rules-v4
+LLM): Case carries no explicit affiliation evidence, and applicant-name
+text is not evidence. Policy rule I4 is kept for a future evidence source.
 
 If LLM mode is requested but the model is unavailable (package missing,
 auth, network, rate limit, unusable response), triage never crashes: it
@@ -30,6 +34,15 @@ from . import similarity
 MODE_OFFLINE = "offline"
 MODE_LLM = "llm"
 MODE_FALLBACK = "llm_fallback_offline"
+
+# Version of CONTEXT_PROMPT, recorded with every LLM attempt. Separate from
+# policy.POLICY_VERSION because prompt output is not deterministic.
+#   context-prompt-v1  four questions, incl. plausible_affiliation.
+#   context-prompt-v2  affiliation question removed; applicant-name
+#                      similarity stated not to be evidence; applicant
+#                      entity type labelled as such.
+CONTEXT_PROMPT_VERSION = "context-prompt-v2"
+DEFAULT_CONTEXT_MODEL = "claude-sonnet-4-6"
 
 
 class LLMUnavailable(Exception):
@@ -69,7 +82,7 @@ def _strict_bool(value) -> bool:
         return value.strip().lower() == "true"
     raise ValueError("not a boolean")
 
-CONTEXT_PROMPT = """You are a trademark context analyst. Judge ONLY the four context questions below for this case. Do not classify risk. Return strict JSON, no markdown, no extra text.
+CONTEXT_PROMPT = """You are a trademark context analyst. Judge ONLY the three context questions below for this case. Do not classify risk. Return strict JSON, no markdown, no extra text.
 
 Case:
 protected_mark: {protected_mark}
@@ -77,7 +90,7 @@ candidate_mark: {candidate_mark}
 candidate_class: {candidate_class}
 candidate_goods: {candidate_goods}
 applicant_name: {applicant_name}
-owner_entity_type: {owner_entity_type}
+applicant_entity_type: {applicant_entity_type}
 recent_filing_count: {recent_filing_count}
 
 Adjudicated precedents (retrieved similar past cases and their outcomes;
@@ -88,10 +101,11 @@ copy them blindly):
 Definitions (from the SignalSilence instruction set):
 - goods_adjacent: goods are commercially adjacent (complements, accessories, line extensions, same channels/purchasers, or consumers could assume shared brand origin). Class differences do not control.
 - added_wording_descriptive: the candidate mark is the core mark plus wording that is descriptive/generic (a product or category descriptor), not a distinctive element.
-- plausible_affiliation: the applicant plausibly appears affiliated with the protected mark's owner (subsidiary, regional entity, franchise, aligned corporate identity).
 - behavioral_signal: filing velocity or pattern suggests serial/opportunistic filing.
 
-Return: {{"goods_adjacent": bool, "added_wording_descriptive": bool, "plausible_affiliation": bool, "behavioral_signal": bool, "rationale": "one short sentence"}}"""
+Do not judge affiliation. An applicant name that resembles or contains the protected mark is not evidence of any relationship to the mark owner.
+
+Return: {{"goods_adjacent": bool, "added_wording_descriptive": bool, "behavioral_signal": bool, "rationale": "one short sentence"}}"""
 
 # NICE classes that are commercially adjacent to apparel/footwear (025) for
 # offline mode. Deliberately tiny: this is a demo heuristic, not a product.
@@ -143,18 +157,26 @@ def _offline_context(case: Case, precedents=None) -> ContextJudgment:
     )
 
 
-def _llm_context(case: Case, precedents=None) -> ContextJudgment:
-    """LLM context judgment. Raises LLMUnavailable on any failure; triage() falls back."""
-    prompt = CONTEXT_PROMPT.format(
+def render_context_prompt(case: Case, precedents=None) -> str:
+    """The exact CONTEXT_PROMPT text sent to the model for a case."""
+    return CONTEXT_PROMPT.format(
         protected_mark=case.protected_mark,
         candidate_mark=case.candidate_mark,
         candidate_class=case.candidate_class,
         candidate_goods=case.candidate_goods,
         applicant_name=case.applicant_name,
-        owner_entity_type=case.owner_entity_type,
+        applicant_entity_type=case.owner_entity_type,
         recent_filing_count=case.recent_filing_count,
         precedents=format_precedents_for_prompt(precedents or []),
     )
+
+
+def _llm_context(case: Case, precedents, model: str):
+    """LLM context judgment -> (ContextJudgment, model reported by the API).
+
+    Raises LLMUnavailable on any failure; triage() falls back.
+    """
+    prompt = render_context_prompt(case, precedents)
     try:
         import anthropic  # imported lazily so offline mode has no dependency
     except ImportError:
@@ -162,24 +184,29 @@ def _llm_context(case: Case, precedents=None) -> ContextJudgment:
     try:
         client = anthropic.Anthropic()
         msg = client.messages.create(
-            model=os.environ.get("SIGNALSILENCE_MODEL", "claude-sonnet-4-6"),
+            model=model,
             max_tokens=300,
             messages=[{"role": "user", "content": prompt}],
         )
         raw = "".join(b.text for b in msg.content if b.type == "text")
     except Exception as exc:  # any client/transport failure must degrade, not crash
         raise LLMUnavailable(_failure_category(exc, anthropic)) from None
+    reported = getattr(msg, "model", None)
     try:
         data = json.loads(re.sub(r"```(json)?|```", "", raw).strip())
-        return ContextJudgment(
+        ctx = ContextJudgment(
             goods_adjacent=_strict_bool(data["goods_adjacent"]),
             added_wording_descriptive=_strict_bool(data["added_wording_descriptive"]),
-            plausible_affiliation=_strict_bool(data["plausible_affiliation"]),
+            # rules-v4: an LLM cannot establish affiliation. Case has no
+            # explicit affiliation evidence; any plausible_affiliation key
+            # the model returns anyway is ignored.
+            plausible_affiliation=False,
             behavioral_signal=_strict_bool(data["behavioral_signal"]),
             rationale=str(data.get("rationale", ""))[:200],
         )
     except (ValueError, KeyError, TypeError):  # JSONDecodeError is a ValueError
         raise LLMUnavailable("malformed_response") from None
+    return ctx, reported if isinstance(reported, str) and reported else model
 
 
 def triage(case: Case, use_llm: bool | None = None, retriever=None,
@@ -203,9 +230,14 @@ def triage(case: Case, use_llm: bool | None = None, retriever=None,
     if use_llm is None:
         use_llm = bool(os.environ.get("ANTHROPIC_API_KEY"))
     mode, fallback_reason = MODE_OFFLINE, None
+    prompt_version = llm_model = None
     if use_llm:
+        # Provenance of the attempt; on fallback it records what was tried.
+        prompt_version = CONTEXT_PROMPT_VERSION
+        llm_model = os.environ.get("SIGNALSILENCE_MODEL", DEFAULT_CONTEXT_MODEL)
         try:
-            ctx, mode = _llm_context(case, precedents), MODE_LLM
+            ctx, llm_model = _llm_context(case, precedents, llm_model)
+            mode = MODE_LLM
         except LLMUnavailable as exc:
             mode, fallback_reason = MODE_FALLBACK, exc.category
             ctx = _offline_context(case, precedents)
@@ -229,4 +261,5 @@ def triage(case: Case, use_llm: bool | None = None, retriever=None,
         case_id=case.case_id, risk=risk, action=action,
         scores=scores, context=ctx, insight=insight, invariant_notes=notes,
         precedents=precedents, assessment_mode=mode, fallback_reason=fallback_reason,
+        prompt_version=prompt_version, llm_model=llm_model,
     )

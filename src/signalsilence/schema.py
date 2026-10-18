@@ -71,3 +71,8 @@ class TriageResult:
     # but unavailable; offline context judgment used instead).
     assessment_mode: str = "offline"
     fallback_reason: Optional[str] = None  # safe category only, never exception text
+    # LLM provenance (None in offline mode). For "llm": the prompt version
+    # sent and the model the API reported (else the model requested). For
+    # "llm_fallback_offline": what was attempted; the judgment is offline.
+    prompt_version: Optional[str] = None
+    llm_model: Optional[str] = None
