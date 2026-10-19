@@ -141,6 +141,26 @@ def case_history(db_path, case_id: str) -> list:
     return [dict(r) for r in rows]
 
 
+def list_events(db_path) -> list:
+    """All decision events across cases in recording (event) order. Strictly read-only.
+
+    Opens the database read-only and never creates or upgrades it (unlike
+    the other helpers, which call init_db): a missing database means no
+    decisions yet, and old rows are returned exactly as stored.
+    """
+    path = Path(db_path)
+    if not path.exists():
+        return []
+    uri = f"{path.resolve().as_uri()}?mode=ro"
+    with closing(sqlite3.connect(uri, uri=True)) as conn:
+        conn.row_factory = sqlite3.Row
+        tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if "review_events" not in tables:
+            return []
+        rows = conn.execute("SELECT * FROM review_events ORDER BY event_id").fetchall()
+    return [dict(r) for r in rows]
+
+
 def latest_decisions(db_path) -> dict:
     """Latest decision event per case_id, for the queue view."""
     init_db(db_path)
