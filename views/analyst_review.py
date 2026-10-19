@@ -306,7 +306,7 @@ with case_col:
                 "Rules version": e["policy_version"] or NOT_AVAILABLE,
                 "Note": e["analyst_note"] or "",
             } for i, e in enumerate(reversed(history))],
-            hide_index=True, use_container_width=True,
+            hide_index=True, width="stretch",
             column_config={"#": st.column_config.NumberColumn(width="small")},
         )
         with st.expander("Stored system snapshot of the latest decision"):

@@ -4,13 +4,14 @@ Phases 0–1.2 were on branch `phase1/analyst-review-workspace` (based on `main`
 merged as `f4e272b`). Phase 2 is on `phase2/decision-engine-hardening` (merged as `89c9534`).
 Phase 2.1 is on `phase2-1/llm-affiliation-hardening` (merged as `4889600`). Phase 2.2 is on
 `phase2-2/fallback-cache-hardening` (merged as `7bafe5d`). Phase 2.3 is on
-`phase2-3/assessment-consistency`.
+`phase2-3/assessment-consistency` (merged as `bd25802`). Phase 3 is on
+`phase3/governance-provenance`.
 **Thresholds (0.85 / 0.85 / 0.70), rule order and retrieval behavior are unchanged
 throughout.** Phases 0–1.2 changed no decision output. Phases 2 and 2.1 made deliberate,
 versioned decision-path fixes (`rules-v2`, `rules-v3`, `rules-v4`). Across the 105 offline
 baseline cases the only changes are 9 rule-note strings; risk and action are identical.
 Verified at every step. Current: `POLICY_VERSION = "rules-v4"`,
-`CONTEXT_PROMPT_VERSION = "context-prompt-v2"`.
+`CONTEXT_PROMPT_VERSION = "context-prompt-v2"`, SQLite `SCHEMA_VERSION = 2`.
 
 ## Phase 0: read-only audit
 - Audited the repo against the implementation brief. Findings are in
@@ -205,6 +206,46 @@ simulated impact of each are in `PHASE2_AUDIT.md`.
   - **Scope:** the fingerprint helper is local to the page and isn't stored. No change to
     SQLite, `review_store`, scoring, prompts, `POLICY_VERSION` (`rules-v4`),
     `CONTEXT_PROMPT_VERSION` (`context-prompt-v2`) or the 105 offline outputs.
+
+## Phase 3: governance and decision provenance (`phase3/governance-provenance`)
+A bounded milestone (6 iterations). No change to scoring, thresholds, rule order, prompts,
+`POLICY_VERSION` (`rules-v4`), `CONTEXT_PROMPT_VERSION` (`context-prompt-v2`), the SQLite
+schema (v2) or the 105 offline outputs.
+- `c146c62` **Decision Provenance page** (read-only). For each recorded decision it shows
+  the system assessment, the analyst decision and the assessment provenance stored with
+  it. It defaults to **Dismissals & Escalations** (Dismiss Flag and Refer for Legal
+  Review); **All Decisions** adds Confirm Flag. It shows contemporaneous recorded evidence,
+  not reconstructed model chain-of-thought. Fields not captured when a decision was
+  recorded show *Not recorded at decision time* and are never backfilled. It never writes
+  to, or creates, the database.
+- `ef03a63` **Capture-time provenance.** New decisions store, inside the existing system
+  snapshot JSON (no schema change):
+  - `data_source`: for the demo, `synthetic_demo_case` with reference
+    `demo_cases:<case_id>`. Never a USPTO claim.
+  - `assessed_at`: the UTC time the reviewed assessment was produced, stamped inside the
+    cached assessment. It is shown separately from the decision-recorded time.
+- `4e65241` **AI Governance page** with five tabs (System & Purpose, Data & Lineage, Risk &
+  Controls, Regulatory Lens, Monitoring & Change). Controls are marked **ACTIVE** (13, each
+  with repository evidence and any qualification), **PROPOSED** (3) or **FUTURE** (6).
+  Regulatory mappings are design and applicability aids (status as of 2026-10-18), not
+  compliance claims. There is no compliance score or badge.
+- `06300b6` **Four-page explicit navigation.** `app.py` stays the Streamlit Cloud
+  entrypoint and registers the pages with `st.navigation` / `st.Page`. The sidebar reads
+  **Triage · Analyst Review · Decision Provenance · AI Governance**. The routes are `/`,
+  `/Analyst_Review`, `/Decision_Provenance` and `/AI_Governance`. The pages moved from
+  `pages/` to `views/`, which is not auto-discovered.
+- **Closeout: Streamlit compatibility pin.**
+  - `requirements.txt` pins `streamlit==1.66.0`, the version Phase 3 was tested and
+    browser-verified on (with Python 3.14, as on Streamlit Cloud).
+  - The two `st.dataframe(..., use_container_width=True)` calls now use
+    `width="stretch"`, Streamlit's current equivalent. This removes the 1.66 deprecation
+    warning; the tables are otherwise unchanged.
+  - Older Streamlit versions (such as 1.37) do not accept `width="stretch"`, so run the
+    app in an environment installed from `requirements.txt`.
+- **Stated limits (unchanged, and shown in the app):**
+  - Current demo data is synthetic; the intended USPTO ingestion is not implemented.
+  - Public Streamlit demo history is temporary and may be shared across visitors.
+  - There is no authentication, so no reviewer identity is recorded.
 
 ## Known follow-ups (recorded, not implemented)
 - ~~**LLM affiliation prompt**~~: resolved in Phase 2.1 (`rules-v4`, `context-prompt-v2`).

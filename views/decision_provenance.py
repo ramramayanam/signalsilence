@@ -102,7 +102,7 @@ st.dataframe(
         "Analyst decision": review_store.DECISIONS.get(e["analyst_decision"], e["analyst_decision"]),
         "Outcome (derived)": outcome_badge(e["system_action"], e["analyst_decision"]),
     } for e in shown],
-    hide_index=True, use_container_width=True,
+    hide_index=True, width="stretch",
 )
 st.caption(DERIVED_NOTE)
 

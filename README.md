@@ -186,12 +186,12 @@ need it. The original n8n workflow design is documented in `legacy/`.
 ## Quick start
 
 ```bash
-pip install -r requirements.txt
-python -m pytest                   # 44 tests; the 4 UI tests are skipped without streamlit
+pip install -r requirements.txt     # pins streamlit==1.66.0; use a fresh virtual environment
+python -m pytest                   # page tests are skipped without streamlit
 python evals/run_eval.py           # offline eval, no API key needed
 python evals/run_eval.py --rag     # + precedent retrieval (leave-one-out)
 python evals/run_eval.py --show-misses
-streamlit run app.py               # interactive demo + "Analyst Review" page in the sidebar
+streamlit run app.py               # Triage, Analyst Review, Decision Provenance, AI Governance
 
 # Optional: LLM context judgment (RAG precedents ground the prompt)
 export ANTHROPIC_API_KEY=...

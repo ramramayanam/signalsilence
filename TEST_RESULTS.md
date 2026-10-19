@@ -1,7 +1,8 @@
 # SignalSilence test results
 
-Latest run: Phase 2.3, 2026-10-18, branch `phase2-3/assessment-consistency`
-(`POLICY_VERSION = "rules-v4"`, `CONTEXT_PROMPT_VERSION = "context-prompt-v2"`, both unchanged).
+Latest run: Phase 3 closeout, 2026-10-18, branch `phase3/governance-provenance`
+(`POLICY_VERSION = "rules-v4"`, `CONTEXT_PROMPT_VERSION = "context-prompt-v2"`,
+`SCHEMA_VERSION = 2`, all unchanged). Streamlit is pinned to `1.66.0`.
 All runs are offline (`ANTHROPIC_API_KEY` unset). LLM behavior is tested with a faked SDK;
 no live or paid API calls were made.
 
@@ -9,8 +10,12 @@ no live or paid API calls were made.
 
 | Environment | Result |
 |---|---|
-| Windows Anaconda, Python 3.12.7, streamlit 1.37.1, no `anthropic` | **134 passed, 1 skipped** (real-SDK exception test needs `anthropic`) |
-| WSL `python3`, Python 3.14.4, `anthropic` 1.2.0, no streamlit | **112 passed, 10 skipped** (UI tests need streamlit: `test_review_page.py` and `test_review_retry.py` as whole files, plus 8 page tests in `test_review_consistency.py`; its fingerprint unit test runs) |
+| Isolated environment, Python 3.14.4, **streamlit 1.66.0** (the pinned version), `anthropic` 1.2.0 | **204 passed** |
+| WSL `python3`, Python 3.14.4, `anthropic` 1.2.0, no streamlit | **143 passed, 48 skipped** (page tests need streamlit) |
+
+The base Windows Anaconda environment (streamlit 1.37.1) was left unchanged. It passed
+203 (1 skipped) through Phase 3 navigation, before the pin. It cannot run the pages
+since the closeout: 1.37 rejects `width="stretch"`.
 
 | File | Tests | Covers |
 |---|---|---|
@@ -25,6 +30,10 @@ no live or paid API calls were made.
 | `test_affiliation.py` | 14 | **D2:** knock-off-style applicant names not affiliated; rules-v2+ risk/action for 5 bad and 1 normal applicant; version is current. **2.1:** the old "LLM claim → I4" test is deliberately inverted (LLM claim ignored) |
 | `test_review_consistency.py` | 9 | **2.3:** two-session race (A sees fallback, B retries, A submits → nothing written, warning, A sees update, note kept); `demo_4` LOW/REVIEW → HIGH/ESCALATE: Dismiss not recorded; resubmit after review → exactly one event with the new snapshot; no false alarm when unchanged; offline records normally; case switching makes no false mismatch; a change while on another case is shown on return without blocking; a blocked submit leaves earlier history untouched; fingerprint helper (exact page code) stable and content-sensitive |
 | `test_review_retry.py` | 7 | **2.2:** with a fake LLM that fails then succeeds: no automatic retry after recovery; retry button only for fallback (not successful LLM or offline); retry makes exactly one call, for the selected case only; other cases stay cached; failed retry stays fallback; successful retry is visible to a new session (shared cache); history keeps the fallback snapshot and then records the LLM snapshot; offline unchanged and never calls the model |
+| `test_decision_provenance.py` | 25 | **3:** read-only provenance page: default Dismissals & Escalations filter, All Decisions, evidence and system state as recorded, *Not recorded at decision time* for uncaptured fields, derived outcome labelled as derived, no chain-of-thought or USPTO claim, never writes or creates the database |
+| `test_capture_provenance.py` | 12 | **3:** `data_source` and UTC `assessed_at` stored for new decisions; old-style calls still work; demo source is synthetic, never USPTO; cached reruns, case switches and other sessions keep `assessed_at`; retry and re-reviewed submits record the new assessment's time; provenance page separates produced from recorded time |
+| `test_ai_governance.py` | 25 | **3:** statuses only ACTIVE / PROPOSED / FUTURE, and proposed or future items never shown as active; ACTIVE evidence paths exist; qualifications (append-only is not tamper-proof, regression is manual not CI, provenance for new decisions only); fixed regulatory vocabularies; EU AI Act and ISO rows are design references with no compliance or certification claim; five tabs render; no score, percentage or live-monitoring claim; every page script runs |
+| `test_navigation.py` | 7 | **3:** `app.py` is the router; exactly Triage, Analyst Review, Decision Provenance, AI Governance in order; Triage is the default root page; routes `Analyst_Review`, `Decision_Provenance`, `AI_Governance`; no `pages/`; Triage output unchanged for all 5 demo cases |
 | `test_llm_affiliation.py` | 19 | **2.1:** rendered and sent prompt has no affiliation question and uses `applicant_entity_type`; a reply without the key is valid; an unexpected `plausible_affiliation` (true, "true", "maybe", null) is ignored; the other 3 facts keep strict parsing; Knockoffs LLC and Athletica Canada stay HIGH/ESCALATE with no I4; the I4 policy rule intact; prompt version and reported or requested model recorded; fallback records the attempt only; offline has no LLM provenance; snapshot keeps prompt version and model |
 
 All tests that touch the database use a temporary SQLite file.
@@ -56,6 +65,7 @@ rules-v2, rules-v3 and rules-v4.
     metadata.
   - **Phase 2.2:** no change (UI and caching only).
   - **Phase 2.3:** no change (UI submit check and case-switching fix only).
+  - **Phase 3:** no change (provenance capture, new pages, navigation and the Streamlit pin).
 - Fields pinned: risk, action, lexical, phonetic, semantic (always null), 4 context
   facts, rationale, insight, rule notes.
 - Fields excluded as volatile: LLM output, retrieval precedents, timestamps.
@@ -77,6 +87,22 @@ rules-v2, rules-v3 and rules-v4.
   - Found and fixed: the queue selection used to reset after recording.
 - Phase 2 / 2.1: the fallback warning and the LLM provenance caption are covered by AppTest.
   No new screenshots.
+- Phase 3 closeout: real-browser smoke on streamlit 1.66.0 (headless Chrome, throwaway
+  database seeded with one decision recorded without capture-time provenance):
+  **37 of 37 checks passed.**
+  - **Navigation:** the sidebar shows exactly Triage, Analyst Review, Decision Provenance,
+    AI Governance. Clicks, direct URLs and refresh work for `/`, `/Analyst_Review`,
+    `/Decision_Provenance` and `/AI_Governance`.
+  - **Triage:** demo cases are assessed.
+  - **Analyst Review:** 5 cases; case switching; Confirm Flag, Refer for Legal Review and
+    Dismiss Flag recorded, with notes; history shown. The database holds `data_source`,
+    `assessed_at` and `rules-v4` for each new decision.
+  - **Decision Provenance:** defaults to Dismissals & Escalations; All Decisions adds
+    Confirm Flag; produced and recorded times are shown separately; the seeded decision
+    shows *Not recorded at decision time*; there are no input or action controls.
+  - **AI Governance:** all five tabs switch; 13 ACTIVE controls and their qualifications
+    are visible; all 11 Regulatory Lens rows; no compliance score or badge.
+  - The server log has no `use_container_width` deprecation warning.
 
 ## Known limitations of this testing
 - Live LLM mode, the `--judge` evals and the embedding retrieval backend were not run (they
