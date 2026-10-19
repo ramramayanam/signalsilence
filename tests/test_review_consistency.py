@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGE = str(ROOT / "pages" / "1_Analyst_Review.py")
+PAGE = str(ROOT / "views" / "analyst_review.py")
 sys.path.insert(0, str(ROOT / "src"))
 
 from signalsilence import review_store  # noqa: E402

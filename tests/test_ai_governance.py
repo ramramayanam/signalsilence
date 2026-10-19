@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from signalsilence import governance as g  # noqa: E402
 
-PAGE = str(ROOT / "pages" / "3_AI_Governance.py")
+PAGE = str(ROOT / "views" / "ai_governance.py")
 LENS = {r["framework"]: r for r in g.REGULATORY_LENS}
 
 
@@ -217,8 +217,8 @@ def test_monitoring_tab_does_not_claim_live_monitoring(page):
     assert "Fallback-rate monitoring :gray-background[FUTURE]" in t
 
 
-@pytest.mark.parametrize("script", ["app.py", "pages/1_Analyst_Review.py",
-                                    "pages/2_Decision_Provenance.py", "pages/3_AI_Governance.py"])
+@pytest.mark.parametrize("script", ["app.py", "views/triage.py", "views/analyst_review.py",
+                                    "views/decision_provenance.py", "views/ai_governance.py"])
 def test_all_pages_run(script, tmp_path, monkeypatch):
     pytest.importorskip("streamlit")
     from streamlit.testing.v1 import AppTest

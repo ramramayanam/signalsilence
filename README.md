@@ -209,7 +209,7 @@ SIGNALSILENCE_RETRIEVAL=embedding python evals/run_eval.py --rag
 ## Analyst Review workspace (prototype)
 
 **SignalSilence recommends. The analyst decides.** The Analyst Review page
-(`pages/1_Analyst_Review.py`) puts a human decision on top of the unchanged
+(`views/analyst_review.py`) puts a human decision on top of the unchanged
 triage pipeline.
 
 - **Launch:** `streamlit run app.py`, then open **Analyst Review** in the sidebar.

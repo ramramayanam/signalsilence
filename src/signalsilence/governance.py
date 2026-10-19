@@ -54,7 +54,7 @@ CONTROLS = [
     {"control": "No automated downstream action", "status": ACTIVE,
      "what": "The system only recommends; no code path sends notices, files actions or acts "
              "on a decision.",
-     "evidence": ["pages/1_Analyst_Review.py", "src/signalsilence/triage.py"]},
+     "evidence": ["views/analyst_review.py", "src/signalsilence/triage.py"]},
     {"control": "System recommendation separated from analyst decision", "status": ACTIVE,
      "what": "Separate system and analyst panels and fields; the analyst vocabulary (Confirm "
              "Flag / Dismiss Flag / Refer for Legal Review) is distinct from the system's "
@@ -72,7 +72,7 @@ CONTROLS = [
     {"control": "Decision provenance captured with the decision", "status": ACTIVE,
      "what": "Each decision stores a snapshot of the system assessment and inputs; the Decision "
              "Provenance page shows it read-only.",
-     "evidence": ["pages/2_Decision_Provenance.py",
+     "evidence": ["views/decision_provenance.py",
                   "tests/test_decision_provenance.py::test_full_snapshot_available"]},
     {"control": "Assessment-produced time and source captured for new decisions", "status": ACTIVE,
      "what": "assessed_at and data_source are stored with each new decision.",

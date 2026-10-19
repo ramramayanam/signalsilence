@@ -1,7 +1,7 @@
 """The five canonical demo cases.
 
-Shared by the demo page (app.py) and the analyst review queue
-(pages/1_Analyst_Review.py) so both always show the same cases.
+Shared by the Triage page (views/triage.py) and the analyst review queue
+(views/analyst_review.py) so both always show the same cases.
 Values are exactly those originally defined inline in app.py.
 """
 from .schema import Case

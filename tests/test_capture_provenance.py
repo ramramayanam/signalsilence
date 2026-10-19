@@ -21,8 +21,8 @@ from signalsilence import review_store  # noqa: E402
 from signalsilence.demo_cases import CANONICAL, data_source  # noqa: E402
 from signalsilence.triage import triage  # noqa: E402
 
-REVIEW_PAGE = str(ROOT / "pages" / "1_Analyst_Review.py")
-PROV_PAGE = str(ROOT / "pages" / "2_Decision_Provenance.py")
+REVIEW_PAGE = str(ROOT / "views" / "analyst_review.py")
+PROV_PAGE = str(ROOT / "views" / "decision_provenance.py")
 DEMO = {c.case_id: c for c in CANONICAL.values()}
 NOT_RECORDED = "Not recorded at decision time"
 
