@@ -211,16 +211,17 @@ def test_missing_fields_show_not_recorded_and_are_not_backfilled(page):
     t = text(at)
     assert "Assessment mode: `offline heuristic context judgment`" in t   # shown as stored
     for field in ("Rules version", "Prompt version", "Model id", "Fallback", "Data source",
-                  "Assessment produced"):
+                  "Assessment produced (UTC)"):
         assert f"{field}: {NOT_RECORDED}" in t, field
     assert f"Added wording descriptive: {NOT_RECORDED}" in t
     assert "Note: No note entered" in t
 
 
 def test_no_assessment_produced_time_is_invented(page):
+    """Rows recorded without assessed_at (all seeded rows here) are never given one."""
     at, _, ids = page
     open_event(at, ids["confirm_offline"], view="All Decisions")
-    assert f"Assessment produced: {NOT_RECORDED}" in text(at)
+    assert f"Assessment produced (UTC): {NOT_RECORDED}" in text(at)
 
 
 def test_full_snapshot_available(page):

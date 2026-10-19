@@ -6,6 +6,17 @@ Values are exactly those originally defined inline in app.py.
 """
 from .schema import Case
 
+DATA_SOURCE_TYPE = "synthetic_demo_case"
+
+
+def data_source(case_id: str) -> dict:
+    """Truthful source descriptor for a canonical demo case.
+
+    These cases are hand-authored in this module; they are not USPTO
+    records and carry no serial number, registration or retrieval time.
+    """
+    return {"type": DATA_SOURCE_TYPE, "reference": f"demo_cases:{case_id}"}
+
 CANONICAL = {
     "LULULEMMON — near-identical, same class": Case(
         "demo_1", "LULULEMON", "LULULEMMON", "025", "clothing",

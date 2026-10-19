@@ -15,6 +15,7 @@ import json
 import os
 import sys
 from dataclasses import asdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 import streamlit as st
@@ -22,7 +23,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from signalsilence import review_store  # noqa: E402
-from signalsilence.demo_cases import CANONICAL  # noqa: E402
+from signalsilence.demo_cases import CANONICAL, data_source  # noqa: E402
 from signalsilence.triage import triage  # noqa: E402
 
 NOT_AVAILABLE = "Not available"
@@ -88,8 +89,14 @@ def assess(case_id: str, use_llm: bool):
     so an llm_fallback_offline result stays until it is explicitly
     retried (see "Retry LLM assessment" below); fallbacks are never
     retried automatically.
+
+    Returns (result, assessed_at). assessed_at is stamped here, inside the
+    cached call, so it is the time this assessment was produced: reruns,
+    case switches and other sessions reuse the same value, and only a new
+    assessment (a cache miss, e.g. after Retry) gets a new one.
     """
-    return triage(CASES[case_id][1], use_llm=use_llm)
+    result = triage(CASES[case_id][1], use_llm=use_llm)
+    return result, datetime.now(timezone.utc).isoformat(timespec="microseconds")
 
 
 def show(value) -> str:
@@ -113,7 +120,9 @@ def status_badge(status: str) -> str:
 
 
 latest = review_store.latest_decisions(DB_PATH)
-results = {cid: assess(cid, USE_LLM) for cid in CASES}
+assessments = {cid: assess(cid, USE_LLM) for cid in CASES}
+results = {cid: res for cid, (res, _) in assessments.items()}
+assessed_at = {cid: at for cid, (_, at) in assessments.items()}
 
 queue_col, case_col = st.columns([2, 3], gap="large")
 
@@ -176,7 +185,8 @@ with case_col:
     with st.container(border=True):
         st.markdown("##### System assessment · SignalSilence recommends")
         st.caption(f"Produced by SignalSilence ({mode_caption(result)}; "
-                   f"rules version {review_store.POLICY_VERSION}).")
+                   f"rules version {review_store.POLICY_VERSION}). Assessment produced "
+                   f"{assessed_at[case_id].replace('T', ' ').replace('+00:00', '')} UTC.")
         retried = st.session_state.pop("retried_case", None) == case_id
         if retried and result.assessment_mode != "llm_fallback_offline":
             st.success("Retry succeeded: this is now the LLM assessment.")
@@ -239,23 +249,29 @@ with case_col:
         # assessment can change (e.g. another session's retry) between what this
         # analyst saw and this submit rerun. Record only if it is unchanged.
         shown_key = f"shown_fp_{case_id}"
+        shown_at_key = f"shown_at_{case_id}"   # assessed_at of the assessment shown
         current_fp = assessment_fingerprint(result)
         if submitted:
             if decision is None:
                 st.warning("Choose a decision before recording.")
             elif st.session_state.get(shown_key) != current_fp:
                 st.session_state[shown_key] = current_fp  # next submit is against this one
+                st.session_state[shown_at_key] = assessed_at[case_id]
                 st.session_state[f"pending_note_{case_id}"] = note
                 st.session_state["assessment_changed"] = case_id
                 st.rerun()
             else:
-                review_store.record_decision(DB_PATH, case, result, decision, note,
-                                             assessment_mode=result.assessment_mode)
+                review_store.record_decision(
+                    DB_PATH, case, result, decision, note,
+                    assessment_mode=result.assessment_mode,
+                    data_source=data_source(case_id),
+                    assessed_at=st.session_state.get(shown_at_key, assessed_at[case_id]))
                 st.session_state.pop(f"pending_note_{case_id}", None)
                 st.session_state["recorded"] = (
                     f"{review_store.DECISIONS[decision]} recorded for {case_id}.")
                 st.rerun()
         st.session_state[shown_key] = current_fp  # what this analyst is now shown
+        st.session_state[shown_at_key] = assessed_at[case_id]
 
         if st.session_state.get("assessment_changed") == case_id:
             del st.session_state["assessment_changed"]

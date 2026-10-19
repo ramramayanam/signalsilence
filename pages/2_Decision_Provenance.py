@@ -37,6 +37,28 @@ def outcome_badge(system_action: str, analyst_decision: str) -> str:
     return "Consistent"
 
 
+SOURCE_TYPES = {"synthetic_demo_case": "Synthetic demo case"}
+
+
+def utc(ts: str) -> str:
+    return ts.replace("T", " ").replace("+00:00", "")
+
+
+def source_text(snapshot) -> str:
+    """Data source as recorded with the decision; never inferred."""
+    source = recorded(snapshot or {}, "data_source")
+    if not isinstance(source, dict):
+        return str(source)
+    kind = source.get("type")
+    label = SOURCE_TYPES.get(kind, str(kind) if kind else NOT_RECORDED)
+    return f"{label} · Reference: {source.get('reference') or NOT_RECORDED}"
+
+
+def produced_text(snapshot) -> str:
+    value = recorded(snapshot or {}, "assessed_at")
+    return value if value == NOT_RECORDED else utc(str(value))
+
+
 def recorded(mapping: dict, key: str, absent_but_captured: str = "None"):
     """Value as stored; distinguishes 'key never captured' from 'captured as empty'."""
     if not isinstance(mapping, dict) or key not in mapping:
@@ -152,10 +174,14 @@ with c3.container(border=True):
         f"Prompt version: {recorded(system, 'prompt_version', 'None (offline assessment, no LLM used)' if offline else 'None')}",
         f"Model id: {recorded(system, 'llm_model', 'None (offline assessment, no LLM used)' if offline else 'None')}",
         f"Fallback: {fallback}",
-        f"Data source: {recorded(snapshot or {}, 'data_source')}",
-        f"Assessment produced: {recorded(snapshot or {}, 'assessed_at')}",
+        f"Data source: {source_text(snapshot)}",
+        f"Assessment produced (UTC): {produced_text(snapshot)}",
+        f"Decision recorded (UTC): {utc(event['recorded_at'])}",
     ]))
-    st.caption("Values are shown exactly as stored with the decision.")
+    st.caption("Values are shown exactly as stored with the decision. Assessment produced "
+               "is when the system generated the assessment the analyst reviewed; Decision "
+               "recorded is when the analyst saved the decision. They can differ because "
+               "assessments are cached.")
 
 with st.expander("Full stored snapshot (audit view)"):
     if snapshot is None:

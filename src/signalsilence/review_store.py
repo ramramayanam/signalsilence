@@ -100,18 +100,31 @@ def init_db(db_path) -> None:
 
 def record_decision(db_path, case: Case, result: TriageResult, decision: str,
                     note: str | None = None,
-                    assessment_mode: str | None = None) -> int:
+                    assessment_mode: str | None = None, *,
+                    data_source: dict | None = None,
+                    assessed_at: str | None = None) -> int:
     """Append one analyst decision with a snapshot of the system assessment.
 
     Returns the new event_id. A blank note is stored as NULL. The rules
     version is policy.POLICY_VERSION: the assessment being reviewed was
     produced by the policy module loaded in this process.
+
+    Optional capture-time provenance, supplied by the caller and stored in
+    the snapshot only when given (older callers simply omit it):
+      data_source  where the reviewed case came from, e.g.
+                   {"type": "synthetic_demo_case", "reference": "demo_cases:demo_1"}
+      assessed_at  UTC ISO-8601 time the reviewed assessment was produced
+                   (not the decision time, which is recorded_at)
     """
     if decision not in DECISIONS:
         raise ValueError(f"unknown analyst decision: {decision!r}")
     note = (note or "").strip() or None
     snapshot = {"case_inputs": asdict(case), "system_assessment": asdict(result),
                 "policy_version": POLICY_VERSION}
+    if data_source is not None:
+        snapshot["data_source"] = data_source
+    if assessed_at is not None:
+        snapshot["assessed_at"] = assessed_at
     init_db(db_path)
     with closing(_connect(db_path)) as conn, conn:
         cur = conn.execute(
