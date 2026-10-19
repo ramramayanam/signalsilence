@@ -1,10 +1,21 @@
 """The five canonical demo cases.
 
-Shared by the demo page (app.py) and the analyst review queue
-(pages/1_Analyst_Review.py) so both always show the same cases.
+Shared by the Triage page (views/triage.py) and the analyst review queue
+(views/analyst_review.py) so both always show the same cases.
 Values are exactly those originally defined inline in app.py.
 """
 from .schema import Case
+
+DATA_SOURCE_TYPE = "synthetic_demo_case"
+
+
+def data_source(case_id: str) -> dict:
+    """Truthful source descriptor for a canonical demo case.
+
+    These cases are hand-authored in this module; they are not USPTO
+    records and carry no serial number, registration or retrieval time.
+    """
+    return {"type": DATA_SOURCE_TYPE, "reference": f"demo_cases:{case_id}"}
 
 CANONICAL = {
     "LULULEMMON — near-identical, same class": Case(

@@ -100,18 +100,31 @@ def init_db(db_path) -> None:
 
 def record_decision(db_path, case: Case, result: TriageResult, decision: str,
                     note: str | None = None,
-                    assessment_mode: str | None = None) -> int:
+                    assessment_mode: str | None = None, *,
+                    data_source: dict | None = None,
+                    assessed_at: str | None = None) -> int:
     """Append one analyst decision with a snapshot of the system assessment.
 
     Returns the new event_id. A blank note is stored as NULL. The rules
     version is policy.POLICY_VERSION: the assessment being reviewed was
     produced by the policy module loaded in this process.
+
+    Optional capture-time provenance, supplied by the caller and stored in
+    the snapshot only when given (older callers simply omit it):
+      data_source  where the reviewed case came from, e.g.
+                   {"type": "synthetic_demo_case", "reference": "demo_cases:demo_1"}
+      assessed_at  UTC ISO-8601 time the reviewed assessment was produced
+                   (not the decision time, which is recorded_at)
     """
     if decision not in DECISIONS:
         raise ValueError(f"unknown analyst decision: {decision!r}")
     note = (note or "").strip() or None
     snapshot = {"case_inputs": asdict(case), "system_assessment": asdict(result),
                 "policy_version": POLICY_VERSION}
+    if data_source is not None:
+        snapshot["data_source"] = data_source
+    if assessed_at is not None:
+        snapshot["assessed_at"] = assessed_at
     init_db(db_path)
     with closing(_connect(db_path)) as conn, conn:
         cur = conn.execute(
@@ -138,6 +151,26 @@ def case_history(db_path, case_id: str) -> list:
         rows = conn.execute(
             "SELECT * FROM review_events WHERE case_id = ? ORDER BY event_id",
             (case_id,)).fetchall()
+    return [dict(r) for r in rows]
+
+
+def list_events(db_path) -> list:
+    """All decision events across cases in recording (event) order. Strictly read-only.
+
+    Opens the database read-only and never creates or upgrades it (unlike
+    the other helpers, which call init_db): a missing database means no
+    decisions yet, and old rows are returned exactly as stored.
+    """
+    path = Path(db_path)
+    if not path.exists():
+        return []
+    uri = f"{path.resolve().as_uri()}?mode=ro"
+    with closing(sqlite3.connect(uri, uri=True)) as conn:
+        conn.row_factory = sqlite3.Row
+        tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if "review_events" not in tables:
+            return []
+        rows = conn.execute("SELECT * FROM review_events ORDER BY event_id").fetchall()
     return [dict(r) for r in rows]
 
 

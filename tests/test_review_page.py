@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from signalsilence import review_store  # noqa: E402
 
-PAGE = str(Path(__file__).resolve().parents[1] / "pages" / "1_Analyst_Review.py")
+PAGE = str(Path(__file__).resolve().parents[1] / "views" / "analyst_review.py")
 
 
 @pytest.fixture

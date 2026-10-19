@@ -1,5 +1,11 @@
 # AI Risk & Impact Assessment — SignalSilence
 
+> **Production design concept — not implemented in the current SignalSilence demo.**
+> The multi-agent collection, vision-similarity and evidence-drafting components
+> described below do not exist in this repository. The demo implements the triage
+> core and the Analyst Review / Decision Provenance workflow only; see the app's
+> AI Governance page for the controls that are actually implemented.
+
 **Artifact type:** AI System Risk & Impact Assessment (pre-deployment)
 **System:** SignalSilence — AI-assisted trademark infringement detection
 **Assessment owner:** Ram Ramayanam, AI Governance Lead
@@ -89,6 +95,9 @@ Scope note: This assessment covers the full production design. The public repo i
 ---
 
 # Companion Artifact: Agent Registry Entry — SignalSilence Drafting Agent
+
+> **Production design concept — not implemented in the current SignalSilence demo.**
+> No drafting agent exists in this repository; this entry is a schema example.
 
 *(One row of the enterprise agent registry, expanded. In practice this is a record in a system; shown here as a schema example.)*
 

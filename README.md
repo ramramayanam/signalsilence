@@ -82,7 +82,7 @@ case ──> similarity.py ──> triage.py ──────────> pol
 
 This system ships with its own governance artifacts:
 - [AI Intake & Risk-Tiering Rubric](governance/ai-intake-risk-tiering-rubric.md) — the program "front door" (NIST AI RMF, EU AI Act tiers)
-- [Risk & Impact Assessment](governance/risk-impact-assessment-signalsilence.md) — completed NIST AI RMF-mapped assessment with agent registry entry and autonomy reclassification gates
+- [Risk & Impact Assessment](governance/risk-impact-assessment-signalsilence.md) — completed NIST AI RMF-mapped assessment with agent registry entry and autonomy reclassification gates. It assesses the full production design concept (collection, vision similarity, drafting agent), which is not implemented in the current demo; see the AI Governance page for what the demo actually implements.
 ## Results (offline mode, 100 labeled synthetic cases)
 
 Without retrieval:
@@ -186,12 +186,12 @@ need it. The original n8n workflow design is documented in `legacy/`.
 ## Quick start
 
 ```bash
-pip install -r requirements.txt
-python -m pytest                   # 44 tests; the 4 UI tests are skipped without streamlit
+pip install -r requirements.txt     # pins streamlit==1.66.0; use a fresh virtual environment
+python -m pytest                   # page tests are skipped without streamlit
 python evals/run_eval.py           # offline eval, no API key needed
 python evals/run_eval.py --rag     # + precedent retrieval (leave-one-out)
 python evals/run_eval.py --show-misses
-streamlit run app.py               # interactive demo + "Analyst Review" page in the sidebar
+streamlit run app.py               # Triage, Analyst Review, Decision Provenance, AI Governance
 
 # Optional: LLM context judgment (RAG precedents ground the prompt)
 export ANTHROPIC_API_KEY=...
@@ -209,7 +209,7 @@ SIGNALSILENCE_RETRIEVAL=embedding python evals/run_eval.py --rag
 ## Analyst Review workspace (prototype)
 
 **SignalSilence recommends. The analyst decides.** The Analyst Review page
-(`pages/1_Analyst_Review.py`) puts a human decision on top of the unchanged
+(`views/analyst_review.py`) puts a human decision on top of the unchanged
 triage pipeline.
 
 - **Launch:** `streamlit run app.py`, then open **Analyst Review** in the sidebar.
@@ -253,14 +253,19 @@ reviewed in the commit.
 
 ## Human-in-the-loop design (production shape)
 
+> **Production design concept — not implemented in the current SignalSilence demo.**
+> In this repo the implemented human gate is the Analyst Review page; the digest,
+> drafting and cease-and-desist approval gate below are design intent.
+
 The MVP design (see `legacy/`) wraps this engine in two human gates:
 a weekly suppression-review digest (catches false negatives) and an
 approval gate before any drafted cease-and-desist is sent. Every AI
 decision, human override, and final outcome is logged — the feedback
 dataset that improves thresholds over time and constitutes the long-term
-moat. Ingestion is decoupled: the demo runs on a static synthetic
-snapshot; a production deployment swaps in the USPTO bulk-data loader
-(`load_from_feed` interface) and a scheduled pull.
+moat. Ingestion is designed to be decoupled: the demo runs on hand-authored
+synthetic cases; a production deployment would add a USPTO data loader and a
+scheduled pull. Live USPTO ingestion is design intent / future production
+integration and is not implemented in this repo (there is no feed loader).
 
 ## Limitations (stated plainly)
 
